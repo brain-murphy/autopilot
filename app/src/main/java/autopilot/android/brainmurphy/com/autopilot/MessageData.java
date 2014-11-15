@@ -1,11 +1,12 @@
 package autopilot.android.brainmurphy.com.autopilot;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Created by connorrmounts on 11/14/14.
  */
-public class MessageData {
+public class MessageData implements Serializable {
 
     private ArrayList<MessageThread> threads;
 

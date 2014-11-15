@@ -21,9 +21,13 @@ import java.util.TimerTask;
  */
 public class MessageService extends IntentService {
 
+    public static String KEY_MESSAGE_DATA = "messdata key";
+
     private SmsManager smsManager;
     private SmsReceiver smsReceiver;
     private IntentFilter intentFilter;
+
+    private MarkovModel markovModel;
 
     public MessageService() {
         super("MessageService");
@@ -31,6 +35,7 @@ public class MessageService extends IntentService {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        markovModel = MarkovModel.defaultModel();
         return START_STICKY;
     }
 
