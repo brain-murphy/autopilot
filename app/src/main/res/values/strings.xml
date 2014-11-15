@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+    <resources>
 
     <string name="app_name">AutoPilot</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="contact_name">First Last Name</string>
+    <string name="switch_name">switch</string>
+    <string name="search_name">Search</string>
 
 </resources>
