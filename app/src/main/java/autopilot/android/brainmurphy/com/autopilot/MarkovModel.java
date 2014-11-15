@@ -1,6 +1,11 @@
 package autopilot.android.brainmurphy.com.autopilot;
 
+import android.app.Service;
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Scanner;
 import java.util.TreeMap;
 
 public class MarkovModel implements java.io.Serializable {
@@ -10,11 +15,13 @@ public class MarkovModel implements java.io.Serializable {
     private static final long serialVersionUID = -7519507685860833463L;
     private static final int ORDER = 10;
     private static final String DELIMITER = "\t";
+    private static String[] stopwords = new String[1];
+    private static int stopwordIndex = 0;
+    private static MarkovModel defaultModel;
+    private static Service service;
 
-    private int order;
     private TreeMap<String, KGram> kgrams = new TreeMap<String, KGram>();
     private TreeMap<String, ResponseSeed> inputOutputTree = new TreeMap<String, ResponseSeed>();
-
 
     private class ResponseSeed implements java.io.Serializable {
         /**
@@ -123,12 +130,29 @@ public class MarkovModel implements java.io.Serializable {
         }
     }
 
-    public MarkovModel(int order) {
-        this.order = order;
+    public MarkovModel() {
+        try {
+            InputStream stream = service.getAssets().open("test-data/stopwords.txt");
+            Scanner scanner = new Scanner(stream);
+
+            while(scanner.hasNextLine()) {
+                if(stopwordIndex >= stopwords.length) {
+                    String[] newArray = new String[stopwords.length * 2];
+                    for (int idx = 0; idx < stopwordIndex; ++idx) {
+                        newArray[idx] = stopwords[idx];
+                    }
+
+                    stopwords = newArray;
+                }
+                stopwords[stopwordIndex++] = scanner.nextLine();
+            }
+        } catch (IOException e) {
+
+        }
     }
 
     private static MarkovModel buildModelFromTextMessages(ArrayList<TextMessage> messages) {
-        MarkovModel model = new MarkovModel(ORDER);
+        MarkovModel model = new MarkovModel();
 
         StringBuilder builder = new StringBuilder();
         for (TextMessage text : messages) {
@@ -178,7 +202,9 @@ public class MarkovModel implements java.io.Serializable {
         }
     }
 
-    public static MarkovModel personalityModelFromSentTextMessages(ArrayList<TextMessage> messages) {
+    public static MarkovModel personalityModelFromSentTextMessages(ArrayList<TextMessage> messages, Service s) {
+        service = s;
+
         StdOut.println("Building personality model from " + messages.size() + " messages...");
         MarkovModel model = MarkovModel.buildModelFromTextMessages(messages);
 
@@ -189,10 +215,18 @@ public class MarkovModel implements java.io.Serializable {
         return model;
     }
 
-    public static MarkovModel defaultModel(String phoneNumber) {
-        String[] files = {"test-data/SMS.csv", "test-data/SMS2.csv"};
+    public static MarkovModel defaultModel(Service s) {
+        if(defaultModel != null) {
+            return defaultModel;
+        }
 
-        return MarkovModel.personalityModelFromSentTextMessages(messagesFromFiles(files, phoneNumber));
+        service = s;
+
+        String[] files = {"test-data/SMS.csv"};
+
+        defaultModel = MarkovModel.personalityModelFromSentTextMessages(messagesFromFiles(files, "3363914954"), s);
+
+        return defaultModel;
     }
 
     public String responseForInput(String input) {
@@ -233,20 +267,29 @@ public class MarkovModel implements java.io.Serializable {
         if(message.length() < ORDER) {
             return message.toLowerCase();
         } else {
+//        	String originalMessage = new String(message);
+//        	for (String stopword : stopwords) {
+//        		message = message.replaceAll(stopword, "").trim();
+//        	}
+//        	
+//        	if(message.length() == 0) {
+//        		
+//        	}
+
             return message.substring(0, ORDER).toLowerCase();
         }
     }
 
     public void addText(String text) {
         // process text and generate model
-        if (text.length() <= this.order) {
+        if (text.length() <= ORDER) {
             return;
         }
 
-        text = text + text.substring(0, this.order);
+        text = text + text.substring(0, ORDER);
 
-        for (int idx = 0; idx < text.length() - this.order; ++idx) {
-            String substring = text.substring(idx, idx + order);
+        for (int idx = 0; idx < text.length() - ORDER; ++idx) {
+            String substring = text.substring(idx, idx + ORDER);
 
             KGram kgram = this.kgrams.get(substring);
 
@@ -256,7 +299,7 @@ public class MarkovModel implements java.io.Serializable {
             }
 
             kgram.incrementFrequency();
-            kgram.incrementCharacter(text.charAt(idx + order));
+            kgram.incrementCharacter(text.charAt(idx + ORDER));
         }
     }
 
@@ -286,8 +329,6 @@ public class MarkovModel implements java.io.Serializable {
                     closestKey = key;
                 }
             }
-
-            StdOut.println("Closest match: " + closestKey);
 
             if(closestKey != null) {
                 return this.inputOutputTree.get(closestKey);
@@ -365,12 +406,13 @@ public class MarkovModel implements java.io.Serializable {
     private static ArrayList<TextMessage> messagesFromFiles(String[] files, String userPhoneNumber) {
         ArrayList<TextMessage> messages = new ArrayList<TextMessage>();
 
-        for (String filepath : files) {
-            In reader = new In(filepath);
+        try {
+            for (String filepath : files) {
+                InputStream stream = service.getAssets().open(filepath);
+                Scanner scanner = new Scanner(stream);
 
-            if(reader.exists()) {
-                while (reader.hasNextLine()) {
-                    String line = reader.readLine();
+                while (scanner.hasNextLine()) {
+                    String line = scanner.nextLine();
 
                     if (line.length() < DELIMITER.length() * 4) {
                         continue;
@@ -384,21 +426,21 @@ public class MarkovModel implements java.io.Serializable {
 
                     messages.add(new TextMessage(components[3], components[0], components[0].endsWith(userPhoneNumber)));
                 }
-            } else {
-                StdOut.print("COULDN'T READ FROM READER");
             }
+        } catch (IOException e) {
+
         }
+
 
         return messages;
     }
 
     public static void main(String[] args) {
-        String[] files = {"test-data/SMS.csv", "test-data/SMS2.csv"};
+        //MarkovModel model = MarkovModel.personalityModelFromSentTextMessages(messagesFromFiles(files, "3363914954"));
+        //MarkovModel model = MarkovModel.defaultModel();
 
-        MarkovModel model = MarkovModel.personalityModelFromSentTextMessages(messagesFromFiles(files, "3363914954"));
-
-        while(true) {
-            StdOut.println("\n" + model.responseForInput(StdIn.readLine()) + "\n");
-        }
+//        while(true) {
+//            StdOut.println("\n" + model.responseForInput(StdIn.readLine()) + "\n");
+//        }
     }
 }
