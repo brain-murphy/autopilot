@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-<<<<<<< HEAD
-=======
     <!-- From: file:/C:/Users/Brian/Code/Android/autopilot/app/src/main/res/values/styles.xml -->
     <eat-comment/>
     <color name="active">#63D6C7</color>
     <color name="inactive">#CFCFCF</color>
     <color name="text_color">#ffffff</color>
->>>>>>> brian-branch
     <!-- From: file:/C:/Users/Brian/Code/Android/autopilot/app/src/main/res/values/dimens.xml -->
     <eat-comment/>
     <dimen name="activity_horizontal_margin">16dp</dimen>

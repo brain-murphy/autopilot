@@ -56,4 +56,13 @@ public class TextMessage {
         builder.append(threadID);
         return builder.toString();
     }
+
+    public String toString2() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("Address: ");
+        builder.append(address);
+        builder.append(" Message: ");
+        builder.append(message);
+        return builder.toString();
+    }
 }
