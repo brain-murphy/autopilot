@@ -6,12 +6,19 @@
 
     </style>
 
-    <style name="MyActionBar">
-        <item name="android:background">#F66BFF</item>
+
+    <style name="MyCustomTheme" parent="@android:style/Theme.Holo.Light">
+        <item name="android:actionBarStyle">@style/MyActionBarTheme</item>
     </style>
 
-    <color name="active">#63D6C7</color>
+    <style name="MyActionBarTheme" parent="@android:style/Widget.Holo.Light.ActionBar">
+        <item name="android:background">#63d6c7</item>
+    </style>
+
+
+    <color name="active">#47C5CC</color>
     <color name="inactive">#CFCFCF</color>
     <color name="text_color">#ffffff</color>
+    <color name="image_background">#ffd5ecff</color>
 
 </resources>

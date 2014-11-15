@@ -2,7 +2,8 @@
 <resources>
     <!-- From: file:/Users/connorrmounts/Code/autopilot/app/src/main/res/values/styles.xml -->
     <eat-comment/>
-    <color name="active">#63D6C7</color>
+    <color name="active">#47C5CC</color>
+    <color name="image_background">#ffd5ecff</color>
     <color name="inactive">#CFCFCF</color>
     <color name="text_color">#ffffff</color>
     <!-- From: file:/Users/connorrmounts/Code/autopilot/app/src/main/res/values/dimens.xml -->
@@ -33,7 +34,10 @@
         <!-- Customize your theme here. -->
 
     </style>
-    <style name="MyActionBar">
-        <item name="android:background">#F66BFF</item>
+    <style name="MyActionBarTheme" parent="@android:style/Widget.Holo.Light.ActionBar">
+        <item name="android:background">#63d6c7</item>
+    </style>
+    <style name="MyCustomTheme" parent="@android:style/Theme.Holo.Light">
+        <item name="android:actionBarStyle">@style/MyActionBarTheme</item>
     </style>
 </resources>
