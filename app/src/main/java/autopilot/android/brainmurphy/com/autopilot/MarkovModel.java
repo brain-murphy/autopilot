@@ -1,6 +1,8 @@
 package autopilot.android.brainmurphy.com.autopilot;
 
 
+import android.util.Log;
+
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
@@ -42,7 +44,6 @@ public class MarkovModel {
     	String lastReceived = null;
     	for (int idx = 0; idx < messages.size(); ++idx) {
     		TextMessage message = messages.get(idx);
-
     		if (message.getIsSender()) {
     			if (lastReceived != null) {
     				String input;
@@ -90,7 +91,7 @@ public class MarkovModel {
     	ResponseSeed seed = this.closestResponseSeed(input);
     	String seedString = seed.randomResponseSeed();
     	
-    	//StdOut.println("Creating response for input: " + input);
+    	StdOut.println("Creating response for input: " + input);
     	
     	if (seedString.length() < ORDER) {
     		return seedString;
@@ -160,8 +161,10 @@ public class MarkovModel {
         	
         	int minimumDistance = Integer.MAX_VALUE;
         	String closestKey = null;
+
         	for (String key : this.inputOutputTree.keySet()) {
         		int distance = Distance.distance(key, input);
+
         		if(distance < minimumDistance) {
         			minimumDistance = distance;
         			closestKey = key;
