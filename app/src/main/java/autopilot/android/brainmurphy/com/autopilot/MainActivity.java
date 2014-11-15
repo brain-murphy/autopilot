@@ -6,13 +6,26 @@ import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.LoaderManager;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.Service;
+import android.app.TaskStackBuilder;
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.provider.Contacts;
+import android.provider.Telephony;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.telephony.SmsManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,28 +33,61 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.provider.ContactsContract;
 import android.widget.AdapterView;
+import android.widget.CursorAdapter;
 import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
+import static autopilot.android.brainmurphy.com.autopilot.APSQLiteHelper.*;
 
 public class MainActivity extends Activity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks,
+        LoaderManager.LoaderCallbacks<Cursor>{
 
+    private static final String KEY_QUERY = "queryKey";
+    private static final String KEY_SELECTION = "selectionKey";
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
     private NavigationDrawerFragment mNavigationDrawerFragment;
+
+    private ListView contactsListView;
+
+    private CursorAdapter adapter;
+
+    private Loader loader;
+
 
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
     private CharSequence mTitle;
 
+    private static String searchString = "";
+
+//    private PlaceholderFragment fragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Log.d("Check 1", "Check 1 Reached");
+
+        // This code should be called when autopilot is in use
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(this)
+                        .setSmallIcon(R.drawable.ic_drawer)
+                        .setContentTitle("AutoPilot On")
+                        .setContentText("AutoPilot is handling some of your conversations.");
+        Notification notification = mBuilder.build();
+
+        Intent intent = new Intent(this, MessageService.class);
+        startService(intent);
+        Log.d("Check 2", "Check 2 Reached");
+
+
 
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
@@ -53,45 +99,45 @@ public class MainActivity extends Activity
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
-        //TODO determine whether we need to update our data set and do so//
-        MessageData data = new MessageData();
+        contactsListView = (ListView) findViewById(R.id.contactsListView);
 
-        Cursor cursor = getContentResolver().query(Uri.parse("content://sms/inbox"), null, null, null, null);
-        cursor.moveToFirst();
-        int c = 0;
-        while (!cursor.isAfterLast()) {
-            TextMessage txt = new TextMessage(cursor.getString(cursor.getColumnIndex("address")),
-                    cursor.getString(cursor.getColumnIndex("body")),
-                    cursor.getDouble(cursor.getColumnIndex("date")),
-                    cursor.getInt(cursor.getColumnIndex("thread_id")),
-                    false);
-            data.addTextMessage(txt);
-            cursor.moveToNext();
-        }
+        APSQLiteHelper apsqLiteHelper = new APSQLiteHelper(this);
 
-        cursor = getContentResolver().query(Uri.parse("content://sms/sent"), null, null, null, null);
-        cursor.moveToFirst();
-        c = 0;
-        while (!cursor.isAfterLast()) {
-            TextMessage txt = new TextMessage(cursor.getString(cursor.getColumnIndex("address")),
-                    cursor.getString(cursor.getColumnIndex("body")),
-                    cursor.getDouble(cursor.getColumnIndex("date")),
-                    cursor.getInt(cursor.getColumnIndex("thread_id")),
-                    false);
+        Cursor crsr = apsqLiteHelper.getReadableDatabase().query(TABLE_ENABLED_CONTACTS,
+                ENABLED_CONTACTS_COLUMNS, null, null, null, null, null);
 
-            data.addTextMessage(txt);
-            cursor.moveToNext();
+//        Cursor cursor = getContentResolver().query(Uri.parse("content://sms/sent"), null, null, null, null);
+//        cursor.moveToFirst();
+//        int c = 0;
+//        while (!cursor.isAfterLast()) {
+//            TextMessage txt = new TextMessage(cursor.getString(cursor.getColumnIndex("address")),
+//                    cursor.getString(cursor.getColumnIndex("body")),
+//                    cursor.getDouble(cursor.getColumnIndex("date")),
+//                    cursor.getInt(cursor.getColumnIndex("thread_id")),
+//                    true);
+//        }
 
-        }
+        adapter = new DualCursorAdapter(this,
+                R.layout.list_item_row,
+                null,
+                new String[]{ContactsContract.Contacts.DISPLAY_NAME_PRIMARY},
+                new int[]{android.R.id.text1},
+                0, crsr);
+
+
+        contactsListView.setAdapter(adapter);
+
+        getLoaderManager().initLoader(0, null, this);
     }
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {
-        // update the main content by replacing fragments
-        FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
-                .commit();
+//        // update the main content by replacing fragments
+//        FragmentManager fragmentManager = getFragmentManager();
+//        fragment = PlaceholderFragment.newInstance(position + 1);
+//        fragmentManager.beginTransaction()
+//                .replace(R.id.container, fragment)
+//                .commit();
     }
 
     public void onSectionAttached(int number) {
@@ -120,9 +166,34 @@ public class MainActivity extends Activity
             // decide what to show in the action bar.
             getMenuInflater().inflate(R.menu.main, menu);
             restoreActionBar();
+            SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+            SearchView searchView = (SearchView) menu.findItem(R.id.contactSearchWidget).getActionView();
+            // Assumes current activity is the searchable activity
+            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+                    return false;
+                }
+
+                @Override
+                public boolean onQueryTextChange(String newText) {
+                    Bundle data = null;
+                    if (newText.length() > 0) {
+                        data = new Bundle();
+                        data.putString(KEY_SELECTION, ContactsContract.Contacts.DISPLAY_NAME_PRIMARY
+                                + " LIKE ?");
+                        data.putStringArray(KEY_QUERY, new String[]{"%" + newText + "%"});
+                    }
+                    getLoaderManager().restartLoader(0, data, MainActivity.this);
+                    Log.d("onQueryTextChanged", "called");
+                    return true;
+                }
+            });
+            searchView.setIconifiedByDefault(true);
             return true;
         }
-        return super.onCreateOptionsMenu(menu);
+
+        return true;
     }
 
     @Override
@@ -140,101 +211,28 @@ public class MainActivity extends Activity
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment
-            implements LoaderManager.LoaderCallbacks<Cursor>{
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
 
-        private ListView listView;
-        private SimpleCursorAdapter cursorAdapter;
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        Log.d("OnCreateLoader", "Called");
+        return new CursorLoader(
+                this,
+                ContactsContract.Contacts.CONTENT_URI,
+                new String[]{ContactsContract.Contacts._ID,
+                        ContactsContract.Contacts.LOOKUP_KEY,
+                        ContactsContract.Contacts.DISPLAY_NAME_PRIMARY},
+                args == null ? null : args.getString(KEY_SELECTION),
+                args == null ? null : args.getStringArray(KEY_QUERY),
+                null);
+    }
 
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        adapter.swapCursor(data);
+    }
 
-        public PlaceholderFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            listView = (ListView) rootView.findViewById(R.id.listView);
-            return rootView;
-        }
-
-        @Override
-        public void onActivityCreated(Bundle savedInstanceState) {
-            super.onActivityCreated(savedInstanceState);
-            DualCursorAdapter cursorAdapter = new DualCursorAdapter(getActivity(),
-                    android.R.layout.simple_list_item_1,
-                    null,
-                    new String[]{ContactsContract.Contacts.DISPLAY_NAME_PRIMARY},
-                    new int[]{android.R.id.text1},
-                    0);
-
-            listView.setAdapter(cursorAdapter);
-
-            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {// Get the Cursor
-                    Cursor cursor = ((SimpleCursorAdapter) parent.getAdapter()).getCursor();
-                    // Move to the selected contact
-                    cursor.moveToPosition(position);
-                    Toast.makeText(getActivity(),
-                            cursor.getString(cursor.getColumnIndex(
-                                    ContactsContract.Contacts.DISPLAY_NAME_PRIMARY)),
-                            Toast.LENGTH_SHORT).show();
-                }
-            });
-
-
-            getLoaderManager().initLoader(0, null, this);
-        }
-
-        @Override
-        public void onAttach(Activity activity) {
-            super.onAttach(activity);
-            ((MainActivity) activity).onSectionAttached(
-                    getArguments().getInt(ARG_SECTION_NUMBER));
-        }
-
-        @Override
-        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-            return new CursorLoader(
-                    getActivity(),
-                    ContactsContract.Contacts.CONTENT_URI,
-                    new String[]{ContactsContract.Contacts._ID,
-                            ContactsContract.Contacts.LOOKUP_KEY,
-                            ContactsContract.Contacts.DISPLAY_NAME_PRIMARY},
-                    null,
-                    null,
-                    null);
-        }
-
-        @Override
-        public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-           // cursorAdapter.swapCursor(data);
-        }
-
-        @Override
-        public void onLoaderReset(Loader<Cursor> loader) {
-
-        }
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
     }
 
 }

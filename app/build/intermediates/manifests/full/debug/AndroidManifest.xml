@@ -10,12 +10,20 @@
 
     <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
 
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
+<<<<<<< HEAD
         android:theme="@style/MyCustomTheme" >
+=======
+        android:theme="@style/AppTheme" >
+        <service android:name="autopilot.android.brainmurphy.com.autopilot.MessageService" />
+        android:theme="@style/AppTheme" >
+>>>>>>> 86711bcb4f22ab10a1a9d9bed06a0b0796a23723
         <activity
             android:name="autopilot.android.brainmurphy.com.autopilot.MainActivity"
             android:label="@string/app_name" >
