@@ -23,8 +23,7 @@
         android:layout_width="129dp"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="@string/contact_name"
-        android:id="@+id/textView"
+        android:id="@android:id/text1"
         android:layout_toEndOf="@+id/imageView"
         android:paddingTop="20dp"
         android:paddingBottom="20dp"
@@ -34,12 +33,13 @@
         android:clickable="false"
         android:textStyle="bold" />
 
-    <Switch
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/switch1"
-        android:layout_toEndOf="@+id/textView"
-        android:layout_alignBaseline="@+id/textView"
-        android:layout_alignBottom="@+id/textView"
-        android:layout_toRightOf="@+id/textView" />
+    <Spinner
+        android:id="@+id/spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <ToggleButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
 </RelativeLayout>

@@ -1,15 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- From: file:/Users/luis/Documents/Development/autopilot/app/src/main/res/values-v21/styles.xml -->
+    <!-- From: file:/C:/Users/Brian/Code/Android/autopilot/app/src/main/res/values-v21/styles.xml -->
     <eat-comment/>
     <style name="AppTheme" parent="android:Theme.Material.Light">
     </style>
-    <!-- From: file:/Users/luis/Documents/Development/autopilot/app/src/main/res/values-v21/custom_theme.xml -->
-    <eat-comment/>
-    <style name="CustomActionBarTheme" parent="@android:style/Theme.Holo.Light.DarkActionBar">
-    <item name="android:actionBarStyle">@style/MyActionBar</item>
-</style>
-    <style name="MyActionBar" parent="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse">
-    <item name="android:background">#F66BFF</item>
-</style>
 </resources>
