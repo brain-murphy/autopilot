@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="crowdsurf.android.brainmurphy.com.autopilot.test">
+    package="autopilot.android.brainmurphy.com.autopilot.test">
 
     <uses-sdk android:minSdkVersion="15" android:targetSdkVersion="21" />
 
@@ -9,8 +9,8 @@
     </application>
 
     <instrumentation android:name="android.test.InstrumentationTestRunner"
-                     android:targetPackage="crowdsurf.android.brainmurphy.com.autopilot"
+                     android:targetPackage="autopilot.android.brainmurphy.com.autopilot"
                      android:handleProfiling="false"
                      android:functionalTest="false"
-                     android:label="Tests for crowdsurf.android.brainmurphy.com.autopilot"/>
+                     android:label="Tests for autopilot.android.brainmurphy.com.autopilot"/>
 </manifest>

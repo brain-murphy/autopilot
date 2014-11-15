@@ -1,4 +1,4 @@
-package crowdsurf.android.brainmurphy.com.autopilot;
+package autopilot.android.brainmurphy.com.autopilot;
 
 import android.app.Activity;
 import android.os.Bundle;
