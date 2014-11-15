@@ -4,8 +4,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.CursorAdapter;
 import android.widget.SimpleCursorAdapter;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.Switch;
 import static autopilot.android.brainmurphy.com.autopilot.APSQLiteHelper.*;
 
@@ -25,9 +28,10 @@ public class DualCursorAdapter extends SimpleCursorAdapter{
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = super.getView(position, convertView, parent);
-        enabledCursor.moveToPosition(position);
-        ((Switch) view.findViewById(R.id.enabledSwitch))
-                .setChecked(enabledCursor.getInt(enabledCursor.getColumnIndex(COLUMN_ENABLED)) == 1);
+
+
+        //enabledCursor.moveToPosition(position);
+        //TODO set enabled and such//
         return view;
     }
 }

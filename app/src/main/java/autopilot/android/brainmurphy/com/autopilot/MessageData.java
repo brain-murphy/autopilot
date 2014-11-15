@@ -38,6 +38,14 @@ public class MessageData {
         }
     }
 
+    public ArrayList<TextMessage> getMessages() {
+        ArrayList<TextMessage> messages = new ArrayList<TextMessage>();
+        for (MessageThread thread : threads) {
+            messages.addAll(thread.getMessages());
+        }
+        return messages;
+    }
+
     private class MessageThread {
 
         private ArrayList<TextMessage> messages;
@@ -70,6 +78,10 @@ public class MessageData {
             for (TextMessage txt : messages) {
                 System.out.println(txt.getMessage());
             }
+        }
+
+        public ArrayList<TextMessage> getMessages() {
+            return messages;
         }
     }
 }

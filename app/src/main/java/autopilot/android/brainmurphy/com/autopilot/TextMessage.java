@@ -20,6 +20,12 @@ public class TextMessage {
         isSender = inSender;
     }
 
+    public TextMessage(String inMessage, String inAddress, boolean inSender) {
+        message = inMessage;
+        address = inAddress;
+        isSender = inSender;
+    }
+
     public String getAddress() {
         return address;
     }

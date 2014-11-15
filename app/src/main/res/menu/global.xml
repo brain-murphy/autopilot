@@ -2,14 +2,15 @@
     xmlns:tools="http://schemas.android.com/tools" tools:context=".MainActivity">
     <item
         android:id="@+id/action_settings"
-        android:title="@string/action_settings"
+        android:title=""
         android:orderInCategory="100"
         android:showAsAction="ifRoom"
         />
     <item
-        android:actionViewClass="android.widget.SearchView"
-        android:title="@string/search_name"
-        android:icon="@android:drawable/ic_menu_search"
-        android:showAsAction="ifRoom"
+        android:id="@+id/myswitch"
+        android:title="@string/master_switch"
+        android:showAsAction="always"
+        android:actionLayout="@layout/master_switch"
         />
+
 </menu>
