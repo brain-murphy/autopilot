@@ -21,6 +21,8 @@ import java.util.TimerTask;
  */
 public class MessageService extends IntentService {
 
+    public static String KEY_MESSAGE_DATA = "messdata key";
+
     private SmsManager smsManager;
     private SmsReceiver smsReceiver;
     private IntentFilter intentFilter;
