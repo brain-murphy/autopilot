@@ -39,14 +39,7 @@ import android.widget.SearchView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.logging.Handler;
-
-import static android.provider.Telephony.Sms.Intents.SMS_RECEIVED_ACTION;
-import java.util.List;
-
-
+import static autopilot.android.brainmurphy.com.autopilot.APSQLiteHelper.*;
 
 public class MainActivity extends Activity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks,
@@ -64,6 +57,8 @@ public class MainActivity extends Activity
     private CursorAdapter adapter;
 
     private Loader loader;
+
+
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
@@ -132,17 +127,17 @@ public class MainActivity extends Activity
 
         contactsListView = (ListView) findViewById(R.id.contactsListView);
 
+        APSQLiteHelper apsqLiteHelper = new APSQLiteHelper(this);
 
-
-
-
+        Cursor crsr = apsqLiteHelper.getReadableDatabase().query(TABLE_ENABLED_CONTACTS,
+                ENABLED_CONTACTS_COLUMNS, null, null, null, null, null);
 
         adapter = new DualCursorAdapter(this,
                 R.layout.list_item_row,
                 null,
                 new String[]{ContactsContract.Contacts.DISPLAY_NAME_PRIMARY},
                 new int[]{android.R.id.text1},
-                0, null);
+                0, crsr);
 
 
         contactsListView.setAdapter(adapter);
@@ -230,6 +225,7 @@ public class MainActivity extends Activity
 
         return super.onOptionsItemSelected(item);
     }
+
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {

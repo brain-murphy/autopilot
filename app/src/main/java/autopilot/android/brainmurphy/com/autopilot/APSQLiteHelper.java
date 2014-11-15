@@ -16,8 +16,14 @@ public class APSQLiteHelper extends SQLiteOpenHelper{
     public static final String COLUMN_ID = "_ID";
     public static final String COLUMN_ENABLED = "enabledColumn";
     public static final String COLUMN_PERSONALITY_PROF = "persprof";
+    public static final String[] ENABLED_CONTACTS_COLUMNS = {
+            COLUMN_ID, COLUMN_ENABLED, COLUMN_PERSONALITY_PROF
+    };
 
     public static final String COLUMN_PATH = "path";
+    public static final String[] PERSONALITY_PROFILE_COLUMNS = {
+            COLUMN_ID, COLUMN_PATH
+    };
 
     private static final String CREATE_ENABLED_CONTACTS_TABLE = "CREATE TABLE "+TABLE_ENABLED_CONTACTS+"( "+
             COLUMN_ID+" INTEGER PRIMARY KEY, "+
@@ -25,8 +31,8 @@ public class APSQLiteHelper extends SQLiteOpenHelper{
             COLUMN_PERSONALITY_PROF+" INTEGER, " +
             "FOREIGN KEY("+COLUMN_PERSONALITY_PROF+") REFERENCES "+TABLE_PERSONALITY_PROFILE+"("+COLUMN_ID+") );";
 
-    private static final String CREATE_PERSONALITY_PROF_TABLE = "CREATE TABLE "+TABLE_ENABLED_CONTACTS+"( "+
-            COLUMN_ID+" INTEGER PRIMARY KEY, "+
+    private static final String CREATE_PERSONALITY_PROF_TABLE = "CREATE TABLE "+TABLE_PERSONALITY_PROFILE+"( "+
+            COLUMN_ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
             COLUMN_PATH+" TEXT);";
 
     private static final int DB_VERSION = 1;
