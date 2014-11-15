@@ -24,6 +24,8 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
+import static autopilot.android.brainmurphy.com.autopilot.APSQLiteHelper.*;
+
 
 public class MainActivity extends Activity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -183,12 +185,16 @@ public class MainActivity extends Activity
         @Override
         public void onActivityCreated(Bundle savedInstanceState) {
             super.onActivityCreated(savedInstanceState);
+            APSQLiteHelper apsqLiteHelper = new APSQLiteHelper(getActivity());
+            Cursor enabledCursor = apsqLiteHelper.getReadableDatabase().query(TABLE_ENABLED_CONTACTS,
+                    ENABLED_CONTACTS_COLUMNS, null, null, null, null, null);
             DualCursorAdapter cursorAdapter = new DualCursorAdapter(getActivity(),
                     android.R.layout.simple_list_item_1,
                     null,
                     new String[]{ContactsContract.Contacts.DISPLAY_NAME_PRIMARY},
                     new int[]{android.R.id.text1},
-                    0);
+                    0, enabledCursor);
+            //TODO getting enabled or no, and which profile.//
 
             listView.setAdapter(cursorAdapter);
 
