@@ -78,9 +78,35 @@ public class MainActivity extends Activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Log.d("Check 1", "Check 1 Reached");
 
         // This code should be called when autopilot is in use
+        MessageData data = new MessageData();
+
+        Cursor cursor = getContentResolver().query(Uri.parse("content://sms/inbox"), null, null, null, null);
+        cursor.moveToFirst();
+
+        while (!cursor.isAfterLast()) {
+            TextMessage txt = new TextMessage(cursor.getString(cursor.getColumnIndex("address")),
+                    cursor.getString(cursor.getColumnIndex("body")),
+                    cursor.getDouble(cursor.getColumnIndex("date")),
+                    cursor.getInt(cursor.getColumnIndex("thread_id")),
+                    false);
+            data.addTextMessage(txt);
+        }
+
+        cursor = getContentResolver().query(Uri.parse("content://sms/sent"), null, null, null, null);
+        cursor.moveToFirst();
+
+        while (!cursor.isAfterLast()) {
+            TextMessage txt = new TextMessage(cursor.getString(cursor.getColumnIndex("address")),
+                    cursor.getString(cursor.getColumnIndex("body")),
+                    cursor.getDouble(cursor.getColumnIndex("date")),
+                    cursor.getInt(cursor.getColumnIndex("thread_id")),
+                    true);
+            data.addTextMessage(txt);
+        }
+
+
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(this)
                         .setSmallIcon(R.drawable.ic_drawer)
@@ -89,8 +115,8 @@ public class MainActivity extends Activity
         Notification notification = mBuilder.build();
 
         Intent intent = new Intent(this, MessageService.class);
+        intent.putExtra(MessageService.KEY_MESSAGE_DATA, data);
         startService(intent);
-        Log.d("Check 2", "Check 2 Reached");
 
 
 
@@ -107,16 +133,9 @@ public class MainActivity extends Activity
         contactsListView = (ListView) findViewById(R.id.contactsListView);
 
 
-        Cursor cursor = getContentResolver().query(Uri.parse("content://sms/sent"), null, null, null, null);
-        cursor.moveToFirst();
-        int c = 0;
-        while (!cursor.isAfterLast()) {
-            TextMessage txt = new TextMessage(cursor.getString(cursor.getColumnIndex("address")),
-                    cursor.getString(cursor.getColumnIndex("body")),
-                    cursor.getDouble(cursor.getColumnIndex("date")),
-                    cursor.getInt(cursor.getColumnIndex("thread_id")),
-                    true);
-        }
+
+
+
 
         adapter = new DualCursorAdapter(this,
                 R.layout.list_item_row,
