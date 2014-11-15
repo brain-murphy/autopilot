@@ -76,7 +76,7 @@ public class MainActivity extends Activity
         contactsListView = (ListView) findViewById(R.id.contactsListView);
 
         adapter = new DualCursorAdapter(this,
-                android.R.layout.simple_list_item_1,
+                R.layout.list_item_row,
                 null,
                 new String[]{ContactsContract.Contacts.DISPLAY_NAME_PRIMARY},
                 new int[]{android.R.id.text1},

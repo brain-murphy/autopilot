@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- From: file:/C:/Users/Brian/Code/Android/autopilot/app/src/main/res/values/styles.xml -->
+    <eat-comment/>
+    <color name="active">#63D6C7</color>
+    <color name="inactive">#CFCFCF</color>
+    <color name="text_color">#ffffff</color>
     <!-- From: file:/C:/Users/Brian/Code/Android/autopilot/app/src/main/res/values/dimens.xml -->
     <eat-comment/>
     <dimen name="activity_horizontal_margin">16dp</dimen>
@@ -26,5 +31,9 @@
     <eat-comment/>
     <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar">
         <!-- Customize your theme here. -->
+
+    </style>
+    <style name="MyActionBar">
+        <item name="android:background">#F66BFF</item>
     </style>
 </resources>
