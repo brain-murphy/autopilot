@@ -10,6 +10,7 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.Switch;
+import static autopilot.android.brainmurphy.com.autopilot.APSQLiteHelper.*;
 
 /**
  * Created by Brian on 11/15/2014.
@@ -19,14 +20,15 @@ public class DualCursorAdapter extends SimpleCursorAdapter{
     Cursor enabledCursor;
 
     public DualCursorAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags,
-                             Cursor infoCursor) {
+                            Cursor enabledCursor) {
         super(context, layout, c, from, to, flags);
-        this.enabledCursor = infoCursor;
+        this.enabledCursor = enabledCursor;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = super.getView(position, convertView, parent);
+
 
         //enabledCursor.moveToPosition(position);
         //TODO set enabled and such//
