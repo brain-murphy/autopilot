@@ -6,15 +6,25 @@ import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.LoaderManager;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.Service;
+import android.app.TaskStackBuilder;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.provider.Contacts;
+import android.provider.Telephony;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -29,6 +39,11 @@ import android.widget.SearchView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.logging.Handler;
+
+import static android.provider.Telephony.Sms.Intents.SMS_RECEIVED_ACTION;
 import java.util.List;
 
 
@@ -63,6 +78,22 @@ public class MainActivity extends Activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Log.d("Check 1", "Check 1 Reached");
+
+        // This code should be called when autopilot is in use
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(this)
+                        .setSmallIcon(R.drawable.ic_drawer)
+                        .setContentTitle("AutoPilot On")
+                        .setContentText("AutoPilot is handling some of your conversations.");
+        Notification notification = mBuilder.build();
+
+        Intent intent = new Intent(this, MessageService.class);
+        startService(intent);
+        Log.d("Check 2", "Check 2 Reached");
+
+
+
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getFragmentManager().findFragmentById(R.id.navigation_drawer);
@@ -75,12 +106,25 @@ public class MainActivity extends Activity
 
         contactsListView = (ListView) findViewById(R.id.contactsListView);
 
+
+        Cursor cursor = getContentResolver().query(Uri.parse("content://sms/sent"), null, null, null, null);
+        cursor.moveToFirst();
+        int c = 0;
+        while (!cursor.isAfterLast()) {
+            TextMessage txt = new TextMessage(cursor.getString(cursor.getColumnIndex("address")),
+                    cursor.getString(cursor.getColumnIndex("body")),
+                    cursor.getDouble(cursor.getColumnIndex("date")),
+                    cursor.getInt(cursor.getColumnIndex("thread_id")),
+                    true);
+        }
+
         adapter = new DualCursorAdapter(this,
                 R.layout.list_item_row,
                 null,
                 new String[]{ContactsContract.Contacts.DISPLAY_NAME_PRIMARY},
                 new int[]{android.R.id.text1},
                 0, null);
+
 
         contactsListView.setAdapter(adapter);
 
@@ -190,4 +234,5 @@ public class MainActivity extends Activity
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
     }
+
 }
