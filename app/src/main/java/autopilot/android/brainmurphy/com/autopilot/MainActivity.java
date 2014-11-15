@@ -87,8 +87,10 @@ public class MainActivity extends Activity
                     cursor.getInt(cursor.getColumnIndex("thread_id")),
                     false);
             data.addTextMessage(txt);
+            cursor.moveToNext();
         }
 
+        Log.d("Check 1", "Check 1 Check");
         cursor = getContentResolver().query(Uri.parse("content://sms/sent"), null, null, null, null);
         cursor.moveToFirst();
 
@@ -99,7 +101,9 @@ public class MainActivity extends Activity
                     cursor.getInt(cursor.getColumnIndex("thread_id")),
                     true);
             data.addTextMessage(txt);
+            cursor.moveToNext();
         }
+        Log.d("Check 2", "Check 2 Check");
 
 
         NotificationCompat.Builder mBuilder =
@@ -110,7 +114,7 @@ public class MainActivity extends Activity
         Notification notification = mBuilder.build();
 
         Intent intent = new Intent(this, MessageService.class);
-        intent.putExtra(MessageService.KEY_MESSAGE_DATA, data);
+        //intent.putExtra(MessageService.KEY_MESSAGE_DATA, data);
         startService(intent);
 
 
