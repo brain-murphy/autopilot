@@ -1,8 +1,21 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="autopilot.android.brainmurphy.com.autopilot.MainActivity">
-    <item android:id="@+id/action_example" android:title="@string/action_example"
-        android:showAsAction="withText|ifRoom" />
-    <item android:id="@+id/action_settings" android:title="@string/action_settings"
-        android:orderInCategory="100" android:showAsAction="never" />
+    <item
+        android:id="@+id/action_example"
+        android:title=""
+        android:orderInCategory="100"
+        android:showAsAction="ifRoom"/>
+    <item
+        android:actionViewClass="android.widget.SearchView"
+        android:title="@string/search_name"
+        android:icon="@android:drawable/ic_menu_search"
+        android:showAsAction="always"
+        />
+    <item
+        android:id="@+id/myswitch"
+        android:title="@string/master_switch"
+        android:showAsAction="always"
+        android:actionLayout="@layout/master_switch"
+        />
 </menu>
