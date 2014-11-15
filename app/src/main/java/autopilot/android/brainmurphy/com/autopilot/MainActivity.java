@@ -9,14 +9,15 @@ import android.app.LoaderManager;
 import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Contacts;
+import android.support.v4.widget.DrawerLayout;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.support.v4.widget.DrawerLayout;
 import android.provider.ContactsContract;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -42,6 +43,7 @@ public class MainActivity extends Activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
@@ -50,6 +52,40 @@ public class MainActivity extends Activity
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+
+        //TODO determine whether we need to update our data set and do so//
+        MessageData data = new MessageData();
+
+        Cursor cursor = getContentResolver().query(Uri.parse("content://sms/inbox"), null, null, null, null);
+        cursor.moveToFirst();
+        int c = 0;
+        while (!cursor.isAfterLast()) {
+            TextMessage txt = new TextMessage(cursor.getString(cursor.getColumnIndex("address")),
+                    cursor.getString(cursor.getColumnIndex("body")),
+                    cursor.getDouble(cursor.getColumnIndex("date")),
+                    cursor.getInt(cursor.getColumnIndex("thread_id")),
+                    false);
+            data.addTextMessage(txt);
+            cursor.moveToNext();
+        }
+
+        cursor = getContentResolver().query(Uri.parse("content://sms/sent"), null, null, null, null);
+        cursor.moveToFirst();
+        c = 0;
+        while (!cursor.isAfterLast()) {
+            TextMessage txt = new TextMessage(cursor.getString(cursor.getColumnIndex("address")),
+                    cursor.getString(cursor.getColumnIndex("body")),
+                    cursor.getDouble(cursor.getColumnIndex("date")),
+                    cursor.getInt(cursor.getColumnIndex("thread_id")),
+                    false);
+
+            data.addTextMessage(txt);
+            cursor.moveToNext();
+
+        }
+
+        data.printThread(7);
+
     }
 
     @Override
@@ -68,6 +104,8 @@ public class MainActivity extends Activity
                 break;
         }
     }
+
+
 
     public void restoreActionBar() {
         ActionBar actionBar = getActionBar();
