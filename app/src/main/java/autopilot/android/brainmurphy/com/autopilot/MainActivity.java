@@ -31,6 +31,8 @@ import android.widget.Toast;
 
 import java.util.List;
 
+import static 
+
 
 
 public class MainActivity extends Activity
@@ -49,6 +51,8 @@ public class MainActivity extends Activity
     private CursorAdapter adapter;
 
     private Loader loader;
+
+
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
@@ -75,12 +79,16 @@ public class MainActivity extends Activity
 
         contactsListView = (ListView) findViewById(R.id.contactsListView);
 
+        APSQLiteHelper apsqLiteHelper = new APSQLiteHelper(this);
+
+        Cursor crsr = apsqLiteHelper.getReadableDatabase().query()
+
         adapter = new DualCursorAdapter(this,
                 R.layout.list_item_row,
                 null,
                 new String[]{ContactsContract.Contacts.DISPLAY_NAME_PRIMARY},
                 new int[]{android.R.id.text1},
-                0, null);
+                0, );
 
         contactsListView.setAdapter(adapter);
 
