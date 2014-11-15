@@ -8,6 +8,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         tools:listitem="@layout/list_item_row"></ListView>
+    <!-- This LinearLayout needs to be removed.  -->
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -17,16 +18,19 @@
             android:layout_height="wrap_content"
             android:background="@color/active"
             android:layout_marginBottom="0.5dp"
+            android:layout_marginRight="0.5dp"
             android:layout_marginTop="0dp"
             android:focusableInTouchMode="true"
             android:clickable="true"
-            android:padding="5dp">
+            android:padding="5dp"
+            android:focusable="true">
 
             <ImageView
                 android:layout_width="59dp"
                 android:layout_height="59dp"
-                android:background="#F66BFF"
+                android:background="@color/image_background"
                 android:id="@+id/imageView"
+                android:src="@drawable/contact_image"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
@@ -67,8 +71,9 @@
         <ImageView
             android:layout_width="59dp"
             android:layout_height="59dp"
-            android:background="#F66BFF"
+            android:background="#ffd5ecff"
             android:id="@+id/imageView"
+            android:src="@drawable/contact_image"
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
@@ -108,8 +113,9 @@
             <ImageView
                 android:layout_width="59dp"
                 android:layout_height="59dp"
-                android:background="#F66BFF"
+                android:background="@color/image_background"
                 android:id="@+id/imageView"
+                android:src="@drawable/contact_image"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
@@ -150,8 +156,9 @@
             <ImageView
                 android:layout_width="59dp"
                 android:layout_height="59dp"
-                android:background="#F66BFF"
+                android:background="@color/image_background"
                 android:id="@+id/imageView"
+                android:src="@drawable/contact_image"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
@@ -191,8 +198,9 @@
             <ImageView
                 android:layout_width="59dp"
                 android:layout_height="59dp"
-                android:background="#F66BFF"
+                android:background="@color/image_background"
                 android:id="@+id/imageView"
+                android:src="@drawable/contact_image"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
@@ -222,6 +230,8 @@
                 android:layout_toRightOf="@+id/textView" />
         </RelativeLayout>
         </LinearLayout>
+
+    <!-- End Linear Layout -->
 
     <!-- As the main content view, the view below consumes the entire
          space available using match_parent in both dimensions. -->
