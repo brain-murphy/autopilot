@@ -6,13 +6,25 @@ import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.LoaderManager;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.Service;
+import android.app.TaskStackBuilder;
+import android.content.Context;
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.provider.Contacts;
+import android.provider.Telephony;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.telephony.SmsManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,6 +35,12 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
+
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.logging.Handler;
+
+import static android.provider.Telephony.Sms.Intents.SMS_RECEIVED_ACTION;
 
 
 public class MainActivity extends Activity
@@ -42,6 +60,22 @@ public class MainActivity extends Activity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Log.d("Check 1", "Check 1 Reached");
+
+        // This code should be called when autopilot is in use
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(this)
+                        .setSmallIcon(R.drawable.ic_drawer)
+                        .setContentTitle("AutoPilot On")
+                        .setContentText("AutoPilot is handling some of your conversations.");
+        Notification notification = mBuilder.build();
+
+        Intent intent = new Intent(this, MessageService.class);
+        startService(intent);
+        Log.d("Check 2", "Check 2 Reached");
+
+
 
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
@@ -77,7 +111,7 @@ public class MainActivity extends Activity
                     cursor.getString(cursor.getColumnIndex("body")),
                     cursor.getDouble(cursor.getColumnIndex("date")),
                     cursor.getInt(cursor.getColumnIndex("thread_id")),
-                    false);
+                    true);
 
             data.addTextMessage(txt);
             cursor.moveToNext();
