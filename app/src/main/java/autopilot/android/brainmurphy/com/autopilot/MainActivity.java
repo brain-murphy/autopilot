@@ -83,9 +83,6 @@ public class MainActivity extends Activity
             cursor.moveToNext();
 
         }
-
-        data.printThread(7);
-
     }
 
     @Override
