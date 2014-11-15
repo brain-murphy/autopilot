@@ -1,4 +1,4 @@
 AutoPilot
 =========
 
-Texting app that can take over when your attention isn't required
+Takes over when you need it.
