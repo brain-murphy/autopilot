@@ -17,27 +17,16 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.provider.Contacts;
-import android.provider.Telephony;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.telephony.SmsManager;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 import android.provider.ContactsContract;
-import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
-import android.widget.SimpleCursorAdapter;
-import android.widget.Toast;
 
 import static autopilot.android.brainmurphy.com.autopilot.APSQLiteHelper.*;
 
@@ -106,16 +95,6 @@ public class MainActivity extends Activity
         Cursor crsr = apsqLiteHelper.getReadableDatabase().query(TABLE_ENABLED_CONTACTS,
                 ENABLED_CONTACTS_COLUMNS, null, null, null, null, null);
 
-//        Cursor cursor = getContentResolver().query(Uri.parse("content://sms/sent"), null, null, null, null);
-//        cursor.moveToFirst();
-//        int c = 0;
-//        while (!cursor.isAfterLast()) {
-//            TextMessage txt = new TextMessage(cursor.getString(cursor.getColumnIndex("address")),
-//                    cursor.getString(cursor.getColumnIndex("body")),
-//                    cursor.getDouble(cursor.getColumnIndex("date")),
-//                    cursor.getInt(cursor.getColumnIndex("thread_id")),
-//                    true);
-//        }
 
         adapter = new DualCursorAdapter(this,
                 R.layout.list_item_row,
