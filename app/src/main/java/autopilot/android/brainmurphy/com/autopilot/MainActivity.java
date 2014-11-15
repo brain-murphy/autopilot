@@ -25,6 +25,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.provider.ContactsContract;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
@@ -54,10 +56,6 @@ public class MainActivity extends Activity
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
     private CharSequence mTitle;
-
-    private static String searchString = "";
-
-//    private PlaceholderFragment fragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,16 +103,12 @@ public class MainActivity extends Activity
         Notification notification = mBuilder.build();
 
         Intent intent = new Intent(this, MessageService.class);
-        //intent.putExtra(MessageService.KEY_MESSAGE_DATA, data);
+        intent.putExtra(MessageService.KEY_MESSAGE_DATA, data);
         startService(intent);
-
-
-
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
-
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
@@ -122,20 +116,23 @@ public class MainActivity extends Activity
 
         contactsListView = (ListView) findViewById(R.id.contactsListView);
 
-        APSQLiteHelper apsqLiteHelper = new APSQLiteHelper(this);
-
+        final APSQLiteHelper apsqLiteHelper = new APSQLiteHelper(this);
         Cursor crsr = apsqLiteHelper.getReadableDatabase().query(TABLE_ENABLED_CONTACTS,
                 ENABLED_CONTACTS_COLUMNS, null, null, null, null, null);
-
         adapter = new DualCursorAdapter(this,
                 R.layout.list_item_row,
                 null,
                 new String[]{ContactsContract.Contacts.DISPLAY_NAME_PRIMARY},
                 new int[]{android.R.id.text1},
                 0, crsr);
-
-
         contactsListView.setAdapter(adapter);
+
+        contactsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                apsqLiteHelper.getWritableDatabase().
+            }
+        });
 
         getLoaderManager().initLoader(0, null, this);
     }

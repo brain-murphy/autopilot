@@ -28,6 +28,7 @@ public class MessageService extends IntentService {
     private IntentFilter intentFilter;
 
     private MarkovModel markovModel;
+    private MessageData data;
 
     public MessageService() {
         super("MessageService");
@@ -35,6 +36,7 @@ public class MessageService extends IntentService {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        data = (MessageData) intent.getSerializableExtra(KEY_MESSAGE_DATA);
         markovModel = MarkovModel.defaultModel();
         return START_STICKY;
     }

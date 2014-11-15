@@ -17,21 +17,28 @@ import static autopilot.android.brainmurphy.com.autopilot.APSQLiteHelper.*;
  */
 public class DualCursorAdapter extends SimpleCursorAdapter{
 
-    Cursor enabledCursor;
+    private Cursor enabledCursor;
+    private Context context;
 
     public DualCursorAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags,
                             Cursor enabledCursor) {
         super(context, layout, c, from, to, flags);
         this.enabledCursor = enabledCursor;
+        this.context = context;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = super.getView(position, convertView, parent);
 
+        enabledCursor.moveToPosition(position);
 
-        //enabledCursor.moveToPosition(position);
-        //TODO set enabled and such//
+        if (enabledCursor.getInt(enabledCursor.getColumnIndex(COLUMN_ENABLED)) == 1) {
+            view.setBackgroundColor(context.getResources().getColor(R.color.active));
+        } else {
+            view.setBackgroundColor(context.getResources().getColor(R.color.inactive));
+        }
+        
         return view;
     }
 }
