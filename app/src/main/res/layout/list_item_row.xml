@@ -6,10 +6,8 @@
     android:layout_marginBottom="0.5dp"
     android:layout_marginRight="0.5dp"
     android:layout_marginTop="0dp"
-    android:focusableInTouchMode="true"
-    android:clickable="true"
     android:padding="5dp"
-    android:focusable="true">
+    android:descendantFocusability="blocksDescendants">
 
     <ImageView
         android:layout_width="59dp"
@@ -23,7 +21,7 @@
         android:layout_margin="5dp"/>
 
     <TextView
-        android:layout_width="129dp"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:id="@android:id/text1"
@@ -33,16 +31,5 @@
         android:layout_alignParentTop="true"
         android:layout_toRightOf="@+id/imageView"
         android:textColor="@color/text_color"
-        android:clickable="false"
         android:textStyle="bold" />
-
-    <Spinner
-        android:id="@+id/spinner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-
-    <ToggleButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
 </RelativeLayout>

@@ -74,28 +74,21 @@ public class MessageService extends IntentService {
         @Override
         public void onReceive(Context context, final Intent intent) {
 
-            final PendingResult result = goAsync();
-            Thread thread = new Thread() {
-                public void run() {
+             Bundle myBundle = intent.getExtras();
+             android.telephony.SmsMessage [] messages = null;
+             String strMessage = "";
 
-                    Bundle myBundle = intent.getExtras();
-                    android.telephony.SmsMessage [] messages = null;
-                    String strMessage = "";
+             if (myBundle != null)
+             {
+             Object [] pdus = (Object[]) myBundle.get("pdus");
+             messages = new android.telephony.SmsMessage[pdus.length];
 
-                    if (myBundle != null)
-                    {
-                        Object [] pdus = (Object[]) myBundle.get("pdus");
-                        messages = new android.telephony.SmsMessage[pdus.length];
-
-                        messages[0] = android.telephony.SmsMessage.createFromPdu((byte[]) pdus[0]);
-                        TextMessage message = new TextMessage(messages[0].getMessageBody(),
-                                                               messages[0].getOriginatingAddress(),
-                                                                false);
-                        Log.d("Text received", message.toString2());
-                    }
-                }
-            };
-            thread.start();
+             messages[0] = android.telephony.SmsMessage.createFromPdu((byte[]) pdus[0]);
+             TextMessage message = new TextMessage(messages[0].getMessageBody(),
+                                                    messages[0].getOriginatingAddress(),
+                                                    false);
+             Log.d("Text received", message.toString2());
+             }
         }
     }
 }

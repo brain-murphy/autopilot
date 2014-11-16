@@ -2,14 +2,13 @@ package autopilot.android.brainmurphy.com.autopilot;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.provider.ContactsContract;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.CursorAdapter;
 import android.widget.SimpleCursorAdapter;
-import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
-import android.widget.Switch;
+
+import java.util.ArrayList;
+
 import static autopilot.android.brainmurphy.com.autopilot.APSQLiteHelper.*;
 
 /**
@@ -17,13 +16,13 @@ import static autopilot.android.brainmurphy.com.autopilot.APSQLiteHelper.*;
  */
 public class DualCursorAdapter extends SimpleCursorAdapter{
 
-    private Cursor enabledCursor;
+    private ArrayList<Long> enabledChildren;
     private Context context;
 
     public DualCursorAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags,
-                            Cursor enabledCursor) {
+                            ArrayList<Long> enabledCursor) {
         super(context, layout, c, from, to, flags);
-        this.enabledCursor = enabledCursor;
+        this.enabledChildren = enabledCursor;
         this.context = context;
     }
 
@@ -31,9 +30,8 @@ public class DualCursorAdapter extends SimpleCursorAdapter{
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = super.getView(position, convertView, parent);
 
-        enabledCursor.moveToPosition(position);
-
-        if (enabledCursor.getInt(enabledCursor.getColumnIndex(COLUMN_ENABLED)) == 1) {
+        getCursor().moveToPosition(position);
+        if (enabledChildren.contains(getCursor().getLong(getCursor().getColumnIndex(ContactsContract.Contacts._ID)))) {
             view.setBackgroundColor(context.getResources().getColor(R.color.active));
         } else {
             view.setBackgroundColor(context.getResources().getColor(R.color.inactive));

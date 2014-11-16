@@ -17,6 +17,7 @@ import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -32,12 +33,17 @@ import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
 
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.Map;
+
 import static autopilot.android.brainmurphy.com.autopilot.APSQLiteHelper.*;
 
 public class MainActivity extends Activity implements LoaderManager.LoaderCallbacks<Cursor>{
 
     private static final String KEY_QUERY = "queryKey";
     private static final String KEY_SELECTION = "selectionKey";
+
     private MarkovModel model;
 
     private ListView contactsListView;
@@ -45,6 +51,8 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
     private CursorAdapter adapter;
 
     private Loader loader;
+
+    private ArrayList<Long> enabledChildren;
 
 
     /**
@@ -89,34 +97,35 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
         }
 
         Intent intent = new Intent(this, MessageService.class);
-        intent.putExtra(MessageService.KEY_MESSAGE_DATA, data);
-        startService(intent);
+        //TODO startService(intent);
 
         contactsListView = (ListView) findViewById(R.id.contactsListView);
-
-        final APSQLiteHelper apsqLiteHelper = new APSQLiteHelper(this);
-        final Cursor crsr = apsqLiteHelper.getReadableDatabase().query(TABLE_ENABLED_CONTACTS,
-                ENABLED_CONTACTS_COLUMNS, null, null, null, null, null);
+        enabledChildren = new ArrayList<Long>();
+        Map<String, ?> map = getSharedPreferences("asdfasdf", MODE_PRIVATE).getAll();
+        for (String key : map.keySet()) {
+            enabledChildren.add((Long) map.get(key));
+        }
         adapter = new DualCursorAdapter(this,
                 R.layout.list_item_row,
                 null,
                 new String[]{ContactsContract.Contacts.DISPLAY_NAME_PRIMARY},
                 new int[]{android.R.id.text1},
-                0, crsr);
+                0, enabledChildren);
         contactsListView.setAdapter(adapter);
+
+
 
         contactsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                ContentValues cv = new ContentValues();
-                crsr.moveToPosition(position);
-                cv.put(COLUMN_ENABLED, crsr.getInt(crsr.getColumnIndex(COLUMN_ENABLED)) == 1);
-                if (apsqLiteHelper.getWritableDatabase().update(TABLE_ENABLED_CONTACTS, cv,
-                        COLUMN_ID + " = " + id, null) < 1) {
-                    cv.put(COLUMN_ID, id);
-                    apsqLiteHelper.getWritableDatabase().insert(TABLE_ENABLED_CONTACTS, null, cv);
-                    adapter.notifyDataSetChanged();
+                if (enabledChildren.contains(id)) {
+                    enabledChildren.remove(id);
+                    getSharedPreferences("asdfasdf", MODE_APPEND).edit().remove(Long.toString(id)).commit();
+                } else {
+                    getSharedPreferences("asdfasdf", MODE_APPEND).edit().putLong(Long.toString(id), id).commit();
+                    enabledChildren.add(id);
                 }
+                adapter.notifyDataSetChanged();
             }
         });
 
