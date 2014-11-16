@@ -16,5 +16,6 @@
     <string name="action_example">Example action</string>
     <string name="master_switch">Master Switch</string>
     <string name="title_activity_contact_search">Contacts</string>
+    <string name="shared_pref_key">asdfasdf</string>
 
 </resources>

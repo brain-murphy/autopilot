@@ -20,7 +20,7 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:support-v4:21.0.0'
     compile files('/Users/connorrmounts/Code/autopilot/libs/jackson-core-2.4.3.jar')
     compile files('/Users/luis/Documents/Development/autopilot/libs/jackson-core-2.4.3.jar')
