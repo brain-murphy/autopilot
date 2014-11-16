@@ -1,62 +1,57 @@
 package autopilot.android.brainmurphy.com.autopilot;
 
+import android.content.Context;
 import android.database.DataSetObserver;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
+
+import java.util.List;
 
 /**
  * Created by connorrmounts on 11/16/14.
  */
-public class ImageSpinnerAdapter extends BaseAdapter
+public class ImageSpinnerAdapter extends ArrayAdapter<String>
 {
-    @Override
-    public View getDropDownView(int position, View convertView, ViewGroup parent) {
-        if (convertView == null) {
+    private int[] imageIds;
+    private String[] pathNames;
 
-        }
-        return null;
+    private List<String> personas;
+
+    public ImageSpinnerAdapter(Context context, int resource) {
+        super(context, resource);
     }
 
-
-    @Override
-    public int getCount() {
-        return 0;
+    public ImageSpinnerAdapter(Context context, int resource, int textViewResourceId) {
+        super(context, resource, textViewResourceId);
     }
 
-    @Override
-    public Object getItem(int position) {
-        return null;
+    public ImageSpinnerAdapter(Context context, int resource, String[] objects) {
+        super(context, resource, objects);
     }
 
-    @Override
-    public long getItemId(int position) {
-        return 0;
+    public ImageSpinnerAdapter(Context context, int resource, int textViewResourceId, String[] objects) {
+        super(context, resource, textViewResourceId, objects);
     }
 
-    @Override
-    public boolean hasStableIds() {
-        return false;
+    public ImageSpinnerAdapter(Context context, int resource, List<String> objects, List<String> personas) {
+        super(context, resource, objects);
+        this.personas = personas;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        return null;
-    }
+        View v = super.getView(position, convertView, parent);
 
-    @Override
-    public int getItemViewType(int position) {
-        return 0;
-    }
+        //Spinner spin = (Spinner)v.findViewById(R.id.spinner1);
+        ArrayAdapter<String> personasAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1);
+        personasAdapter.addAll(personas);
 
-    @Override
-    public int getViewTypeCount() {
-        return 0;
-    }
+        //spin.setAdapter(personasAdapter);
 
-    @Override
-    public boolean isEmpty() {
-        return false;
+        return v;
     }
 }
