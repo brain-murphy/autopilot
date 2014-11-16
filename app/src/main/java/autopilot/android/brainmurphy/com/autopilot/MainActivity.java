@@ -95,24 +95,8 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
         }
 
         Intent intent = new Intent(this, MessageService.class);
-<<<<<<< HEAD
-        //intent.putExtra(MessageService.KEY_MESSAGE_DATA, data);
-       // startService(intent);
 
-
-
-
-        mNavigationDrawerFragment = (NavigationDrawerFragment)
-                getFragmentManager().findFragmentById(R.id.navigation_drawer);
-        mTitle = getTitle();
-
-        // Set up the drawer.
-        mNavigationDrawerFragment.setUp(
-                R.id.navigation_drawer,
-                (DrawerLayout) findViewById(R.id.drawer_layout));
-=======
         //TODO startService(intent);
->>>>>>> bd9127f813a060b8d08d715ab9fb51e185341b9d
 
         contactsListView = (ListView) findViewById(R.id.contactsListView);
         enabledChildren = new ArrayList<Long>();
