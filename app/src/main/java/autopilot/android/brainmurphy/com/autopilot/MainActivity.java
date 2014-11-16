@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.LoaderManager;
 import android.app.Notification;
 import android.app.SearchManager;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.CursorLoader;
@@ -20,6 +21,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.CompoundButton;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
@@ -29,6 +31,7 @@ import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
+import android.widget.Switch;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -41,6 +44,7 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
 
     private static final String KEY_QUERY = "queryKey";
     private static final String KEY_SELECTION = "selectionKey";
+    public static final String KEY_ALL_SWITCH = "allsqitch";
 
     private MarkovModel model;
 
@@ -99,7 +103,8 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
 
         contactsListView = (ListView) findViewById(R.id.contactsListView);
         enabledChildren = new ArrayList<Long>();
-        Map<String, ?> map = getSharedPreferences("asdfasdf", MODE_PRIVATE).getAll();
+        Map<String, ?> map = getSharedPreferences(getString(R.string.shared_pref_key), MODE_PRIVATE).getAll();
+        map.remove(KEY_ALL_SWITCH);
         for (String key : map.keySet()) {
             enabledChildren.add((Long) map.get(key));
         }
@@ -116,11 +121,39 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
         contactsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                adapter.getCursor().moveToPosition(position);
+                String contactId =
+                        adapter.getCursor().getString(
+                                adapter.getCursor().getColumnIndex(ContactsContract.Contacts._ID));
+                //
+                //  Get all phone numbers.
+                //
+
+                ContentResolver cr = getContentResolver();
+                Cursor phones = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
+                        ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = " + contactId, null, null);
+                String number = null;
+                while (phones.moveToNext()) {
+                    number = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                    int type = phones.getInt(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE));
+                    switch (type) {
+                        case ContactsContract.CommonDataKinds.Phone.TYPE_HOME:
+                            // do something with the Home number here...
+                            break;
+                        case ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE:
+                            // do something with the Mobile number here...
+                            break;
+                        case ContactsContract.CommonDataKinds.Phone.TYPE_WORK:
+                            // do something with the Work number here...
+                            break;
+                    }
+                }
+                phones.close();
                 if (enabledChildren.contains(id)) {
                     enabledChildren.remove(id);
-                    getSharedPreferences("asdfasdf", MODE_APPEND).edit().remove(Long.toString(id)).commit();
+                    getSharedPreferences(getString(R.string.shared_pref_key), MODE_APPEND).edit().remove(number).commit();
                 } else {
-                    getSharedPreferences("asdfasdf", MODE_APPEND).edit().putLong(Long.toString(id), id).commit();
+                    getSharedPreferences(getString(R.string.shared_pref_key), MODE_APPEND).edit().putLong(number, id).commit();
                     enabledChildren.add(id);
                 }
                 adapter.notifyDataSetChanged();
@@ -175,6 +208,16 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
                 }
             });
             searchView.setIconifiedByDefault(true);
+
+        Switch s = (Switch) menu.findItem(R.id.myswitch).getActionView().findViewById(R.id.switchForActionBar);
+        getSharedPreferences(getString(R.string.shared_pref_key), MODE_PRIVATE).getBoolean(KEY_ALL_SWITCH, false);
+        s.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                getSharedPreferences(getString(R.string.shared_pref_key), MODE_PRIVATE)
+                        .edit().putBoolean(KEY_ALL_SWITCH, isChecked).commit();
+            }
+        });
             return true;
     }
 

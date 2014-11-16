@@ -22,6 +22,7 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="search_name">Search</string>
+    <string name="shared_pref_key">asdfasdf</string>
     <string name="switch_name">switch</string>
     <string name="title_activity_contact_search">Contacts</string>
     <string name="title_activity_main">MainActivity</string>
