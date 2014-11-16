@@ -56,9 +56,6 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
 
     private ArrayList<Long> enabledChildren;
 
-<<<<<<< HEAD
-=======
-
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
@@ -173,9 +170,6 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
         }
     }
 
-
-
->>>>>>> 0fb9ef04fdbcb88b47d7b19eb4ce70583ddc70da
     public void restoreActionBar() {
         ActionBar actionBar = getActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
