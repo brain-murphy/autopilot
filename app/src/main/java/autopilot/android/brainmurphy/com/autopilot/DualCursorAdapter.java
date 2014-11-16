@@ -9,7 +9,6 @@ import android.widget.SimpleCursorAdapter;
 
 import java.util.ArrayList;
 
-import static autopilot.android.brainmurphy.com.autopilot.APSQLiteHelper.*;
 
 /**
  * Created by Brian on 11/15/2014.
