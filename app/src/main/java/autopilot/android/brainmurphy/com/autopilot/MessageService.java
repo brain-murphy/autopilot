@@ -5,17 +5,19 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.Telephony;
 import android.telephony.SmsManager;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 
-import java.util.Collections;
+import java.net.URISyntaxException;
+import java.security.InvalidKeyException;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+
 import com.microsoft.azure.storage.*;
 import com.microsoft.azure.storage.table.*;
 import android.provider.Settings.Secure;
@@ -24,8 +26,6 @@ import android.provider.Settings.Secure;
  * Created by connorrmounts on 11/15/14.
  */
 public class MessageService extends IntentService {
-
-
     // Define the connection-string with your values.
     public static final String storageConnectionString =
             "DefaultEndpointsProtocol=http;" +
@@ -49,39 +49,55 @@ public class MessageService extends IntentService {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        new Thread() {
+        new Thread(new Runnable() {
+            @Override
             public void run() {
-                try
-                {
                     // Retrieve storage account from connection-string.
-                    CloudStorageAccount storageAccount =
-                            CloudStorageAccount.parse(storageConnectionString);
+                CloudStorageAccount storageAccount =
+                        null;
+                try {
+                    storageAccount = CloudStorageAccount.parse(storageConnectionString);
+                } catch (URISyntaxException e) {
+                    e.printStackTrace();
+                } catch (InvalidKeyException e) {
+                    e.printStackTrace();
+                }
 
-                    // Create the table clients.
+                // Create the table clients.
                     CloudTableClient tableClient = storageAccount.createCloudTableClient();
 
                     // Create the tables if they doesn't exist.
+                try {
                     messageTable = new CloudTable("messages",tableClient);
-                    messageTable.createIfNotExists();
-
-                    responseTable = new CloudTable("responses", tableClient);
-                    responseTable.createIfNotExists();
-
-
-                }
-                catch (Exception e)
-                {
-                    // Output the stack trace.
+                } catch (URISyntaxException e) {
+                    e.printStackTrace();
+                } catch (StorageException e) {
                     e.printStackTrace();
                 }
-            }
-        }.start();
+                try {
+                    messageTable.createIfNotExists();
+                } catch (StorageException e) {
+                    e.printStackTrace();
+                }
 
-        new Thread() {
+                try {
+                    responseTable = new CloudTable("responses", tableClient);
+                } catch (URISyntaxException e) {
+                    e.printStackTrace();
+                } catch (StorageException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    responseTable.createIfNotExists();
+                } catch (StorageException e) {
+                    e.printStackTrace();
+                }
 
-            public void run() {
-                while (true) {
-                    try {
+                new Timer().scheduleAtFixedRate(new TimerTask() {
+                    @Override
+                    public void run() {
+
+
                         String partitionFilter = TableQuery.generateFilterCondition(PARTITION_KEY,
                                 TableQuery.QueryComparisons.EQUAL,
                                 PARTITION);
@@ -90,25 +106,35 @@ public class MessageService extends IntentService {
                         TableQuery<Response> partitionQuery = TableQuery.from(Response.class)
                                 .where(partitionFilter);
 
+                        ArrayList<Response> list = new ArrayList<Response>();
+
                         // Loop through the results, displaying information about the entity.
                         for (Response r : responseTable.execute(partitionQuery)) {
+                            StdOut.println(r.getAddress() + " " + r.getResponse());
+                            Log.d("sms", "pre send");
+                            smsManager.sendTextMessage(r.getRecipient(), null,
+                                    r.getResponse(), null, null);
+                            Log.d("sms", "post send");
 
-                            smsManager.sendTextMessage(r.getAddress(),null,
-                                                        r.getResponse(),null,null);
-                            TableOperation deleteResponse = TableOperation.delete(r);
+                            list.add(r);
 
-                            responseTable.execute(deleteResponse);
-
-                            Log.d("Returned", "We have a response.");
+                            Log.d("sms", "We have a response.");
 
                         }
-                        break;
-                    } catch (Exception e) {
-                        Log.d("Query", "No Responses");
+
+                        for (Response r : list) {
+                            TableOperation deleteResponse = TableOperation.delete(r);
+
+                            try {
+                                responseTable.execute(deleteResponse);
+                            } catch (StorageException e) {
+                                e.printStackTrace();
+                            }
+                        }
                     }
-                }
+                }, 0, 100);
             }
-        }.start();
+        }).start();
         return START_STICKY;
     }
 
@@ -135,12 +161,12 @@ public class MessageService extends IntentService {
         try {
             unregisterReceiver(smsReceiver);
         } catch (IllegalArgumentException iae) {}
-        Log.d("MS Destroyed", "MessageService has been destroyed");
     }
 
     private class SmsReceiver extends BroadcastReceiver {
         public void onReceive(final Context context, final Intent intent) {
-            new Thread() {
+            new Thread(new Runnable() {
+                @Override
                 public void run() {
                     userNumber = Secure.getString(context.getContentResolver(),
                             Secure.ANDROID_ID);
@@ -157,6 +183,7 @@ public class MessageService extends IntentService {
                         message.setMessage(messages[0].getDisplayMessageBody());
                         message.setRecipient(messages[0].getDisplayOriginatingAddress());
 
+
                         // Create an operation to add the new customer to the people table.
                         TableOperation insertMessage = TableOperation.insertOrReplace(message);
 
@@ -169,7 +196,7 @@ public class MessageService extends IntentService {
                         }
                     }
                 }
-            }.start();
+            }).start();
         }
 
     }
