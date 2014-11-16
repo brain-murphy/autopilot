@@ -153,10 +153,15 @@ public class MessageService extends IntentService {
     }
 
     private String[] getEnabledContactsNumbers() {
-
         Map<String, ?> map = getSharedPreferences(getString(R.string.shared_pref_key),
                 MODE_PRIVATE).getAll();
+        map.remove(MainActivity.KEY_ALL_SWITCH);
         String[] results = new String[map.size()];
         return map.keySet().toArray(results);
+    }
+
+    private boolean getAllEnabled() {
+        return getSharedPreferences(getString(R.string.shared_pref_key),
+                MODE_PRIVATE).getBoolean(MainActivity.KEY_ALL_SWITCH, false);
     }
 }
