@@ -4,13 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.CursorAdapter;
 import android.widget.SimpleCursorAdapter;
-import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
-import android.widget.Switch;
-import static autopilot.android.brainmurphy.com.autopilot.APSQLiteHelper.*;
 
 /**
  * Created by Brian on 11/15/2014.

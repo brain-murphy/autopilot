@@ -1,10 +1,6 @@
 package autopilot.android.brainmurphy.com.autopilot;
 
 
-import android.util.Log;
-
-import org.w3c.dom.Text;
-
 import android.app.Service;
 
 import java.io.IOException;

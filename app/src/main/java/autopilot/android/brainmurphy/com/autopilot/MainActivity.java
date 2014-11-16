@@ -1,16 +1,9 @@
 package autopilot.android.brainmurphy.com.autopilot;
 
-import android.app.Activity;
-
 import android.app.ActionBar;
-import android.app.Fragment;
-import android.app.FragmentManager;
+import android.app.Activity;
 import android.app.LoaderManager;
 import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.app.Service;
-import android.app.TaskStackBuilder;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.CursorLoader;
@@ -19,27 +12,18 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.provider.Contacts;
-import android.provider.Telephony;
+import android.provider.ContactsContract;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.telephony.SmsManager;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.provider.ContactsContract;
-import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
-import android.widget.SimpleCursorAdapter;
-import android.widget.Toast;
 
-import static autopilot.android.brainmurphy.com.autopilot.APSQLiteHelper.*;
+import static autopilot.android.brainmurphy.com.autopilot.APSQLiteHelper.ENABLED_CONTACTS_COLUMNS;
+import static autopilot.android.brainmurphy.com.autopilot.APSQLiteHelper.TABLE_ENABLED_CONTACTS;
 
 public class MainActivity extends Activity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks,
