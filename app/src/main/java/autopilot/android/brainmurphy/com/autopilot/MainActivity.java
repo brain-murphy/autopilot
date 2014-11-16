@@ -1,57 +1,48 @@
 package autopilot.android.brainmurphy.com.autopilot;
 
-import android.app.Activity;
-
 import android.app.ActionBar;
-import android.app.Fragment;
-import android.app.FragmentManager;
+import android.app.Activity;
 import android.app.LoaderManager;
 import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.app.Service;
-import android.app.TaskStackBuilder;
 import android.app.SearchManager;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.provider.Contacts;
-import android.provider.Telephony;
+import android.provider.ContactsContract;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.telephony.SmsManager;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
+import android.widget.CursorAdapter;
+import android.widget.ListView;
+import android.widget.SearchView;
 import android.provider.ContactsContract;
+import android.view.View;
 import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
-import android.widget.SimpleCursorAdapter;
-import android.widget.Toast;
 
-import static autopilot.android.brainmurphy.com.autopilot.APSQLiteHelper.*;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.Map;
 
-public class MainActivity extends Activity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks,
-        LoaderManager.LoaderCallbacks<Cursor>{
+import static autopilot.android.brainmurphy.com.autopilot.APSQLiteHelper.ENABLED_CONTACTS_COLUMNS;
+import static autopilot.android.brainmurphy.com.autopilot.APSQLiteHelper.TABLE_ENABLED_CONTACTS;
+
+public class MainActivity extends Activity implements LoaderManager.LoaderCallbacks<Cursor>{
 
     private static final String KEY_QUERY = "queryKey";
     private static final String KEY_SELECTION = "selectionKey";
+
     private MarkovModel model;
-    /**
-     * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
-     */
-    private NavigationDrawerFragment mNavigationDrawerFragment;
 
     private ListView contactsListView;
 
@@ -59,15 +50,13 @@ public class MainActivity extends Activity
 
     private Loader loader;
 
+    private ArrayList<Long> enabledChildren;
+
 
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
     private CharSequence mTitle;
-
-    private static String searchString = "";
-
-//    private PlaceholderFragment fragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,17 +93,9 @@ public class MainActivity extends Activity
             data.addTextMessage(txt);
             cursor.moveToNext();
         }
-        Log.d("Check 2", "Check 2 Check");
-
-
-        NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.drawable.ic_drawer)
-                        .setContentTitle("AutoPilot On")
-                        .setContentText("AutoPilot is handling some of your conversations.");
-        Notification notification = mBuilder.build();
 
         Intent intent = new Intent(this, MessageService.class);
+<<<<<<< HEAD
         //intent.putExtra(MessageService.KEY_MESSAGE_DATA, data);
        // startService(intent);
 
@@ -129,35 +110,41 @@ public class MainActivity extends Activity
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+=======
+        //TODO startService(intent);
+>>>>>>> bd9127f813a060b8d08d715ab9fb51e185341b9d
 
         contactsListView = (ListView) findViewById(R.id.contactsListView);
-
-        APSQLiteHelper apsqLiteHelper = new APSQLiteHelper(this);
-
-        Cursor crsr = apsqLiteHelper.getReadableDatabase().query(TABLE_ENABLED_CONTACTS,
-                ENABLED_CONTACTS_COLUMNS, null, null, null, null, null);
-
+        enabledChildren = new ArrayList<Long>();
+        Map<String, ?> map = getSharedPreferences("asdfasdf", MODE_PRIVATE).getAll();
+        for (String key : map.keySet()) {
+            enabledChildren.add((Long) map.get(key));
+        }
         adapter = new DualCursorAdapter(this,
                 R.layout.list_item_row,
                 null,
                 new String[]{ContactsContract.Contacts.DISPLAY_NAME_PRIMARY},
                 new int[]{android.R.id.text1},
-                0, crsr);
-
-
+                0, enabledChildren);
         contactsListView.setAdapter(adapter);
 
-        getLoaderManager().initLoader(0, null, this);
-    }
 
-    @Override
-    public void onNavigationDrawerItemSelected(int position) {
-//        // update the main content by replacing fragments
-//        FragmentManager fragmentManager = getFragmentManager();
-//        fragment = PlaceholderFragment.newInstance(position + 1);
-//        fragmentManager.beginTransaction()
-//                .replace(R.id.container, fragment)
-//                .commit();
+
+        contactsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if (enabledChildren.contains(id)) {
+                    enabledChildren.remove(id);
+                    getSharedPreferences("asdfasdf", MODE_APPEND).edit().remove(Long.toString(id)).commit();
+                } else {
+                    getSharedPreferences("asdfasdf", MODE_APPEND).edit().putLong(Long.toString(id), id).commit();
+                    enabledChildren.add(id);
+                }
+                adapter.notifyDataSetChanged();
+            }
+        });
+
+        getLoaderManager().initLoader(0, null, this);
     }
 
     public void onSectionAttached(int number) {
@@ -180,12 +167,7 @@ public class MainActivity extends Activity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (!mNavigationDrawerFragment.isDrawerOpen()) {
-            // Only show items in the action bar relevant to this screen
-            // if the drawer is not showing. Otherwise, let the drawer
-            // decide what to show in the action bar.
             getMenuInflater().inflate(R.menu.main, menu);
-            restoreActionBar();
             SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
             SearchView searchView = (SearchView) menu.findItem(R.id.contactSearchWidget).getActionView();
             // Assumes current activity is the searchable activity
@@ -211,9 +193,6 @@ public class MainActivity extends Activity
             });
             searchView.setIconifiedByDefault(true);
             return true;
-        }
-
-        return true;
     }
 
     @Override
