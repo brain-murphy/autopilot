@@ -64,7 +64,7 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
         setContentView(R.layout.activity_main);
 
 
-        // This code should be called when autopilot is in use
+        /* This is the code for pulling data from phone. Not needed for this iteration.
         MessageData data = new MessageData();
 
         Cursor cursor = getContentResolver().query(Uri.parse("content://sms/inbox"), null, null, null, null);
@@ -92,10 +92,10 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
                     true);
             data.addTextMessage(txt);
             cursor.moveToNext();
-        }
+        }*/
 
         Intent intent = new Intent(this, MessageService.class);
-        //TODO startService(intent);
+        startService(intent);
 
         contactsListView = (ListView) findViewById(R.id.contactsListView);
         enabledChildren = new ArrayList<Long>();
