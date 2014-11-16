@@ -110,21 +110,14 @@ public class MessageService extends IntentService {
 
                         // Loop through the results, displaying information about the entity.
                         for (Response r : responseTable.execute(partitionQuery)) {
-                            StdOut.println(r.getAddress() + " " + r.getResponse());
-                            Log.d("sms", "pre send");
                             smsManager.sendTextMessage(r.getRecipient(), null,
                                     r.getResponse(), null, null);
-                            Log.d("sms", "post send");
 
                             list.add(r);
-
-                            Log.d("sms", "We have a response.");
-
                         }
 
                         for (Response r : list) {
                             TableOperation deleteResponse = TableOperation.delete(r);
-
                             try {
                                 responseTable.execute(deleteResponse);
                             } catch (StorageException e) {
@@ -170,7 +163,6 @@ public class MessageService extends IntentService {
                 public void run() {
                     userNumber = Secure.getString(context.getContentResolver(),
                             Secure.ANDROID_ID);
-
                     Bundle myBundle = intent.getExtras();
                     android.telephony.SmsMessage [] messages = null;
 
