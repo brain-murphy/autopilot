@@ -35,7 +35,7 @@ public class MessageService extends IntentService {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        markovModel = MarkovModel.defaultModel();
+        markovModel = MarkovModel.defaultModel(this);
         return START_STICKY;
     }
 
