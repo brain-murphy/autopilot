@@ -5,16 +5,20 @@ import android.app.Activity;
 import android.app.LoaderManager;
 import android.app.Notification;
 import android.app.SearchManager;
+import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Binder;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.provider.ContactsContract;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -56,6 +60,20 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
 
     private ArrayList<Long> enabledChildren;
 
+    private MessageService.MessageServiceBinder binder;
+    ServiceConnection connection = new ServiceConnection(){
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            binder = (MessageService.MessageServiceBinder) service;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+
+        }
+    };
+
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
@@ -65,6 +83,8 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        bindService(new Intent(this, MessageService.class), connection, BIND_AUTO_CREATE);
 
 
         /* This is the code for pulling data from phone. Not needed for this iteration.
@@ -96,9 +116,9 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
             data.addTextMessage(txt);
             cursor.moveToNext();
         }*/
-
-        Intent intent = new Intent(this, MessageService.class);
-        startService(intent);
+//
+//        Intent intent = new Intent(this, MessageService.class);
+//        startService(intent);
 
         contactsListView = (ListView) findViewById(R.id.contactsListView);
         enabledChildren = new ArrayList<Long>();
@@ -151,10 +171,19 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
                 if (enabledChildren.contains(id)) {
                     enabledChildren.remove(id);
                     getSharedPreferences(getString(R.string.shared_pref_key), MODE_APPEND).edit().remove(number).commit();
+                    Map<String, ?> map = getSharedPreferences(getString(R.string.shared_pref_key), MODE_PRIVATE).getAll();
+                            map.remove(KEY_ALL_SWITCH);
+                    if (map.size() == 0) {
+                        stopService(new Intent(MainActivity.this, MessageService.class));
+                    }
                 } else {
+                    if (!binder.getStarted()) {
+                        startService(new Intent(MainActivity.this, MessageService.class));
+                    }
                     getSharedPreferences(getString(R.string.shared_pref_key), MODE_APPEND).edit().putLong(number, id).commit();
                     enabledChildren.add(id);
                 }
+                binder.notifySelectedContactsChanged();
                 adapter.notifyDataSetChanged();
             }
         });
@@ -215,6 +244,14 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 getSharedPreferences(getString(R.string.shared_pref_key), MODE_PRIVATE)
                         .edit().putBoolean(KEY_ALL_SWITCH, isChecked).commit();
+
+                Log.d("switch", "checkChanged");
+                if (isChecked) {
+                    startService(new Intent(MainActivity.this, MessageService.class));
+                } else {
+                    Log.d("switch", "stopping");
+                    stopService(new Intent(MainActivity.this, MessageService.class));
+                }
             }
         });
             return true;
@@ -235,6 +272,13 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (binder != null) {
+            unbindService(connection);
+        }
+    }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {

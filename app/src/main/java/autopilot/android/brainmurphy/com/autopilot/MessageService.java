@@ -5,8 +5,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Binder;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.provider.Telephony;
 import android.telephony.SmsManager;
 import android.util.Log;
@@ -42,9 +44,27 @@ public class MessageService extends IntentService {
     private CloudTable messageTable;
     private CloudTable responseTable;
 
+    private Timer timer;
 
     public MessageService() {
         super("MessageService");
+    }
+
+    private boolean isStarted;
+
+    public class MessageServiceBinder extends Binder {
+        public boolean getStarted() {
+            return isStarted;
+        }
+
+        public void notifySelectedContactsChanged() {
+            //TODO
+        }
+    }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        return new MessageServiceBinder();
     }
 
     @Override
@@ -64,9 +84,9 @@ public class MessageService extends IntentService {
                 }
 
                 // Create the table clients.
-                    CloudTableClient tableClient = storageAccount.createCloudTableClient();
+                CloudTableClient tableClient = storageAccount.createCloudTableClient();
 
-                    // Create the tables if they doesn't exist.
+                // Create the tables if they doesn't exist.
                 try {
                     messageTable = new CloudTable("messages",tableClient);
                 } catch (URISyntaxException e) {
@@ -93,42 +113,46 @@ public class MessageService extends IntentService {
                     e.printStackTrace();
                 }
 
-                new Timer().scheduleAtFixedRate(new TimerTask() {
+                timer = new Timer();
+                timer.scheduleAtFixedRate(new TimerTask() {
                     @Override
                     public void run() {
 
+                        if (smsManager != null) {
+                            String partitionFilter = TableQuery.generateFilterCondition(PARTITION_KEY,
+                                    TableQuery.QueryComparisons.EQUAL,
+                                    PARTITION);
 
-                        String partitionFilter = TableQuery.generateFilterCondition(PARTITION_KEY,
-                                TableQuery.QueryComparisons.EQUAL,
-                                PARTITION);
+                            // Specify a partition query, using PARTITION as the partition key filter.
+                            TableQuery<Response> partitionQuery = TableQuery.from(Response.class)
+                                    .where(partitionFilter);
 
-                        // Specify a partition query, using PARTITION as the partition key filter.
-                        TableQuery<Response> partitionQuery = TableQuery.from(Response.class)
-                                .where(partitionFilter);
+                            ArrayList<Response> list = new ArrayList<Response>();
 
-                        ArrayList<Response> list = new ArrayList<Response>();
+                            // Loop through the results, displaying information about the entity.
+                            for (Response r : responseTable.execute(partitionQuery)) {
+                                try {
+                                    if (r.getAddress().equals(userNumber)) {
+                                        smsManager.sendTextMessage(r.getRecipient(), null,
+                                                r.getResponse(), null, null);
 
-                        // Loop through the results, displaying information about the entity.
-                        for (Response r : responseTable.execute(partitionQuery)) {
-                            StdOut.println(r.getAddress() + " " + r.getResponse());
-                            Log.d("sms", "pre send");
-                            smsManager.sendTextMessage(r.getRecipient(), null,
-                                    r.getResponse(), null, null);
-                            Log.d("sms", "post send");
 
-                            list.add(r);
+                                        list.add(r);
+                                    }
 
-                            Log.d("sms", "We have a response.");
+                                } catch (NullPointerException e) {
+                                    Log.d("NPE", "NullPointer");
+                                }
+                            }
 
-                        }
+                            for (Response r : list) {
+                                TableOperation deleteResponse = TableOperation.delete(r);
 
-                        for (Response r : list) {
-                            TableOperation deleteResponse = TableOperation.delete(r);
-
-                            try {
-                                responseTable.execute(deleteResponse);
-                            } catch (StorageException e) {
-                                e.printStackTrace();
+                                try {
+                                    responseTable.execute(deleteResponse);
+                                } catch (StorageException e) {
+                                    e.printStackTrace();
+                                }
                             }
                         }
                     }
@@ -157,10 +181,10 @@ public class MessageService extends IntentService {
     @Override
     public void onDestroy() {
         super.onDestroy();
-
-        try {
-            unregisterReceiver(smsReceiver);
-        } catch (IllegalArgumentException iae) {}
+        if (timer != null) {
+            timer.cancel();
+        }
+        unregisterReceiver(smsReceiver);
     }
 
     private class SmsReceiver extends BroadcastReceiver {
@@ -170,7 +194,6 @@ public class MessageService extends IntentService {
                 public void run() {
                     userNumber = Secure.getString(context.getContentResolver(),
                             Secure.ANDROID_ID);
-
                     Bundle myBundle = intent.getExtras();
                     android.telephony.SmsMessage [] messages = null;
 
@@ -183,17 +206,36 @@ public class MessageService extends IntentService {
                         message.setMessage(messages[0].getDisplayMessageBody());
                         message.setRecipient(messages[0].getDisplayOriginatingAddress());
 
-
-                        // Create an operation to add the new customer to the people table.
+                        String[] enabledContacts = getEnabledContactsNumbers();
                         TableOperation insertMessage = TableOperation.insertOrReplace(message);
 
-                        // Submit the operation to the table service.
-                        try {
-                            messageTable.execute(insertMessage);
-                            Log.d("MessageUp", "Message Uploaded");
-                        } catch (StorageException e) {
-                            e.printStackTrace();
+                        if (getAllEnabled()) {
+                            try {
+                                messageTable.execute(insertMessage);
+                                Log.d("MessageUp", "Message Uploaded");
+                            } catch (StorageException e) {
+                                e.printStackTrace();
+                            }
+                        } else if (enabledContacts.length > 0) {
+                            for (String s : enabledContacts) {
+                                if (s.equals(message.getRecipient())) {
+                                    try {
+                                        messageTable.execute(insertMessage);
+                                        Log.d("MessageUp", "Message Uploaded");
+                                    } catch (StorageException e) {
+                                        e.printStackTrace();
+                                    }
+                                    break;
+                                }
+                            }
                         }
+
+
+                        // Create an operation to add the new customer to the people table.
+
+
+                        // Submit the operation to the table service.
+
                     }
                 }
             }).start();
@@ -205,6 +247,7 @@ public class MessageService extends IntentService {
         public String message;
         public String address;
         public String recipient;
+        public String modelType;
 
         public String getMessage() {
             return this.message;
@@ -230,6 +273,10 @@ public class MessageService extends IntentService {
             this.recipient = r;
         }
 
+        public String getModelType() { return this.recipient; }
+
+        public void setModelType(String r) { this.modelType = r; }
+
         public Message() {
             this.partitionKey = PARTITION;
             this.rowKey = "ROW";
@@ -246,6 +293,7 @@ public class MessageService extends IntentService {
         public String response;
         public String address;
         public String recipient;
+        public String modelType;
 
         public String getResponse() {
             return this.response;
@@ -270,6 +318,10 @@ public class MessageService extends IntentService {
         public void setRecipient(String r) {
             this.recipient = r;
         }
+
+        public String getModelType() { return this.recipient; }
+
+        public void setModelType(String r) { this.modelType = r; }
 
         public Response() {
             this.partitionKey = PARTITION;
