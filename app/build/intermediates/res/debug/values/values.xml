@@ -1,17 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+<<<<<<< HEAD
     <!-- From: file:/Users/luis/Documents/Development/autopilot/app/src/main/res/values/styles.xml -->
+=======
+    <!-- From: file:/Users/connorrmounts/Code/autopilot/app/src/main/res/values/styles.xml -->
+>>>>>>> 0826421882a30eca124cd85ddf283f0ec6b6aeef
     <eat-comment/>
     <color name="active">#63d6c7</color>
     <color name="image_background">#fff</color>
     <color name="inactive">#CFCFCF</color>
     <color name="text_color">#ffffff</color>
+<<<<<<< HEAD
     <!-- From: file:/Users/luis/Documents/Development/autopilot/app/src/main/res/values/dimens.xml -->
+=======
+    <!-- From: file:/Users/connorrmounts/Code/autopilot/app/src/main/res/values/dimens.xml -->
+>>>>>>> 0826421882a30eca124cd85ddf283f0ec6b6aeef
     <eat-comment/>
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="navigation_drawer_width">240dp</dimen>
+<<<<<<< HEAD
     <!-- From: file:/Users/luis/Documents/Development/autopilot/app/src/main/res/values/strings.xml -->
+=======
+    <!-- From: file:/Users/connorrmounts/Code/autopilot/app/src/main/res/values/strings.xml -->
+>>>>>>> 0826421882a30eca124cd85ddf283f0ec6b6aeef
     <eat-comment/>
     <string name="action_example">Example action</string>
     <string name="action_settings">Settings</string>
@@ -28,7 +40,11 @@
     <string name="title_section1">Section 1</string>
     <string name="title_section2">Section 2</string>
     <string name="title_section3">Section 3</string>
+<<<<<<< HEAD
     <!-- From: file:/Users/luis/Documents/Development/autopilot/app/src/main/res/values/styles.xml -->
+=======
+    <!-- From: file:/Users/connorrmounts/Code/autopilot/app/src/main/res/values/styles.xml -->
+>>>>>>> 0826421882a30eca124cd85ddf283f0ec6b6aeef
     <eat-comment/>
     <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar">
         <!-- Customize your theme here. -->

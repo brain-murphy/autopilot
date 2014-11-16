@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+<<<<<<< HEAD
     <!-- From: file:/Users/luis/Documents/Development/autopilot/app/src/main/res/values-w820dp/dimens.xml -->
+=======
+    <!-- From: file:/Users/connorrmounts/Code/autopilot/app/src/main/res/values-w820dp/dimens.xml -->
+>>>>>>> 0826421882a30eca124cd85ddf283f0ec6b6aeef
     <eat-comment/>
     <dimen name="activity_horizontal_margin">64dp</dimen>
 </resources>
