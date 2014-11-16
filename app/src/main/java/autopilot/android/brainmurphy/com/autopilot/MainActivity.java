@@ -21,6 +21,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.CompoundButton;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
@@ -30,6 +31,7 @@ import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
+import android.widget.Switch;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -42,6 +44,7 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
 
     private static final String KEY_QUERY = "queryKey";
     private static final String KEY_SELECTION = "selectionKey";
+    public static final String KEY_ALL_SWITCH = "allsqitch";
 
     private MarkovModel model;
 
@@ -53,6 +56,126 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
 
     private ArrayList<Long> enabledChildren;
 
+<<<<<<< HEAD
+=======
+
+    /**
+     * Used to store the last screen title. For use in {@link #restoreActionBar()}.
+     */
+    private CharSequence mTitle;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+
+        /* This is the code for pulling data from phone. Not needed for this iteration.
+        MessageData data = new MessageData();
+
+        Cursor cursor = getContentResolver().query(Uri.parse("content://sms/inbox"), null, null, null, null);
+        cursor.moveToFirst();
+
+        while (!cursor.isAfterLast()) {
+            TextMessage txt = new TextMessage(cursor.getString(cursor.getColumnIndex("address")),
+                    cursor.getString(cursor.getColumnIndex("body")),
+                    cursor.getDouble(cursor.getColumnIndex("date")),
+                    cursor.getInt(cursor.getColumnIndex("thread_id")),
+                    false);
+            data.addTextMessage(txt);
+            cursor.moveToNext();
+        }
+
+        Log.d("Check 1", "Check 1 Check");
+        cursor = getContentResolver().query(Uri.parse("content://sms/sent"), null, null, null, null);
+        cursor.moveToFirst();
+
+        while (!cursor.isAfterLast()) {
+            TextMessage txt = new TextMessage(cursor.getString(cursor.getColumnIndex("address")),
+                    cursor.getString(cursor.getColumnIndex("body")),
+                    cursor.getDouble(cursor.getColumnIndex("date")),
+                    cursor.getInt(cursor.getColumnIndex("thread_id")),
+                    true);
+            data.addTextMessage(txt);
+            cursor.moveToNext();
+        }*/
+
+        Intent intent = new Intent(this, MessageService.class);
+        startService(intent);
+
+        contactsListView = (ListView) findViewById(R.id.contactsListView);
+        enabledChildren = new ArrayList<Long>();
+        Map<String, ?> map = getSharedPreferences(getString(R.string.shared_pref_key), MODE_PRIVATE).getAll();
+        map.remove(KEY_ALL_SWITCH);
+        for (String key : map.keySet()) {
+            enabledChildren.add((Long) map.get(key));
+        }
+        adapter = new DualCursorAdapter(this,
+                R.layout.list_item_row,
+                null,
+                new String[]{ContactsContract.Contacts.DISPLAY_NAME_PRIMARY},
+                new int[]{android.R.id.text1},
+                0, enabledChildren);
+        contactsListView.setAdapter(adapter);
+
+
+
+        contactsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                adapter.getCursor().moveToPosition(position);
+                String contactId =
+                        adapter.getCursor().getString(
+                                adapter.getCursor().getColumnIndex(ContactsContract.Contacts._ID));
+                //
+                //  Get all phone numbers.
+                //
+
+                ContentResolver cr = getContentResolver();
+                Cursor phones = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
+                        ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = " + contactId, null, null);
+                String number = null;
+                while (phones.moveToNext()) {
+                    number = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                    int type = phones.getInt(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE));
+                    switch (type) {
+                        case ContactsContract.CommonDataKinds.Phone.TYPE_HOME:
+                            // do something with the Home number here...
+                            break;
+                        case ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE:
+                            // do something with the Mobile number here...
+                            break;
+                        case ContactsContract.CommonDataKinds.Phone.TYPE_WORK:
+                            // do something with the Work number here...
+                            break;
+                    }
+                }
+                phones.close();
+                if (enabledChildren.contains(id)) {
+                    enabledChildren.remove(id);
+                    getSharedPreferences(getString(R.string.shared_pref_key), MODE_APPEND).edit().remove(number).commit();
+                } else {
+                    getSharedPreferences(getString(R.string.shared_pref_key), MODE_APPEND).edit().putLong(number, id).commit();
+                    enabledChildren.add(id);
+                }
+                adapter.notifyDataSetChanged();
+            }
+        });
+
+        getLoaderManager().initLoader(0, null, this);
+    }
+
+    public void onSectionAttached(int number) {
+        switch (number) {
+            case 1:
+                mTitle = "";
+                break;
+        }
+    }
+
+
+
+>>>>>>> 0fb9ef04fdbcb88b47d7b19eb4ce70583ddc70da
     public void restoreActionBar() {
         ActionBar actionBar = getActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
@@ -90,6 +213,16 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
                 }
             });
             searchView.setIconifiedByDefault(true);
+
+        Switch s = (Switch) menu.findItem(R.id.myswitch).getActionView().findViewById(R.id.switchForActionBar);
+        getSharedPreferences(getString(R.string.shared_pref_key), MODE_PRIVATE).getBoolean(KEY_ALL_SWITCH, false);
+        s.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                getSharedPreferences(getString(R.string.shared_pref_key), MODE_PRIVATE)
+                        .edit().putBoolean(KEY_ALL_SWITCH, isChecked).commit();
+            }
+        });
             return true;
     }
 

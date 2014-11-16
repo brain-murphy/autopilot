@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- From: file:/Users/luis/Documents/Development/autopilot/app/src/main/res/values/strings.xml -->
+    <eat-comment/>
+    <string-array name="personalities">
+        <item>You</item>
+        <item>Barack Obama</item>
+        <item>CleverBot</item>
+    </string-array>
     <!-- From: file:/Users/luis/Documents/Development/autopilot/app/src/main/res/values/styles.xml -->
     <eat-comment/>
     <color name="active">#63d6c7</color>
