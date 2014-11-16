@@ -276,7 +276,11 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
     protected void onStop() {
         super.onStop();
         if (binder != null) {
-            unbindService(connection);
+            try {
+                unbindService(connection);
+            } catch (Exception e) {
+                Log.e("yo", "as you were");
+            }
         }
     }
 

@@ -68,6 +68,11 @@ public class MessageService extends IntentService {
     }
 
     @Override
+    public boolean onUnbind(Intent intent) {
+        return false;
+    }
+
+    @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         new Thread(new Runnable() {
             @Override
