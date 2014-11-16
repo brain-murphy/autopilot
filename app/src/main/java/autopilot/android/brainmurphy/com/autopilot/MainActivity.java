@@ -12,6 +12,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.app.TaskStackBuilder;
 import android.app.SearchManager;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
@@ -33,17 +34,11 @@ import android.widget.SearchView;
 
 import static autopilot.android.brainmurphy.com.autopilot.APSQLiteHelper.*;
 
-public class MainActivity extends Activity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks,
-        LoaderManager.LoaderCallbacks<Cursor>{
+public class MainActivity extends Activity implements LoaderManager.LoaderCallbacks<Cursor>{
 
     private static final String KEY_QUERY = "queryKey";
     private static final String KEY_SELECTION = "selectionKey";
     private MarkovModel model;
-    /**
-     * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
-     */
-    private NavigationDrawerFragment mNavigationDrawerFragment;
 
     private ListView contactsListView;
 
@@ -92,32 +87,15 @@ public class MainActivity extends Activity
             data.addTextMessage(txt);
             cursor.moveToNext();
         }
-        Log.d("Check 2", "Check 2 Check");
-
-
-        NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.drawable.ic_drawer)
-                        .setContentTitle("AutoPilot On")
-                        .setContentText("AutoPilot is handling some of your conversations.");
-        Notification notification = mBuilder.build();
 
         Intent intent = new Intent(this, MessageService.class);
         intent.putExtra(MessageService.KEY_MESSAGE_DATA, data);
         startService(intent);
 
-        mNavigationDrawerFragment = (NavigationDrawerFragment)
-                getFragmentManager().findFragmentById(R.id.navigation_drawer);
-        mTitle = getTitle();
-        // Set up the drawer.
-        mNavigationDrawerFragment.setUp(
-                R.id.navigation_drawer,
-                (DrawerLayout) findViewById(R.id.drawer_layout));
-
         contactsListView = (ListView) findViewById(R.id.contactsListView);
 
         final APSQLiteHelper apsqLiteHelper = new APSQLiteHelper(this);
-        Cursor crsr = apsqLiteHelper.getReadableDatabase().query(TABLE_ENABLED_CONTACTS,
+        final Cursor crsr = apsqLiteHelper.getReadableDatabase().query(TABLE_ENABLED_CONTACTS,
                 ENABLED_CONTACTS_COLUMNS, null, null, null, null, null);
         adapter = new DualCursorAdapter(this,
                 R.layout.list_item_row,
@@ -130,21 +108,19 @@ public class MainActivity extends Activity
         contactsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                apsqLiteHelper.getWritableDatabase().
+                ContentValues cv = new ContentValues();
+                crsr.moveToPosition(position);
+                cv.put(COLUMN_ENABLED, crsr.getInt(crsr.getColumnIndex(COLUMN_ENABLED)) == 1);
+                if (apsqLiteHelper.getWritableDatabase().update(TABLE_ENABLED_CONTACTS, cv,
+                        COLUMN_ID + " = " + id, null) < 1) {
+                    cv.put(COLUMN_ID, id);
+                    apsqLiteHelper.getWritableDatabase().insert(TABLE_ENABLED_CONTACTS, null, cv);
+                    adapter.notifyDataSetChanged();
+                }
             }
         });
 
         getLoaderManager().initLoader(0, null, this);
-    }
-
-    @Override
-    public void onNavigationDrawerItemSelected(int position) {
-//        // update the main content by replacing fragments
-//        FragmentManager fragmentManager = getFragmentManager();
-//        fragment = PlaceholderFragment.newInstance(position + 1);
-//        fragmentManager.beginTransaction()
-//                .replace(R.id.container, fragment)
-//                .commit();
     }
 
     public void onSectionAttached(int number) {
@@ -167,12 +143,7 @@ public class MainActivity extends Activity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (!mNavigationDrawerFragment.isDrawerOpen()) {
-            // Only show items in the action bar relevant to this screen
-            // if the drawer is not showing. Otherwise, let the drawer
-            // decide what to show in the action bar.
             getMenuInflater().inflate(R.menu.main, menu);
-            restoreActionBar();
             SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
             SearchView searchView = (SearchView) menu.findItem(R.id.contactSearchWidget).getActionView();
             // Assumes current activity is the searchable activity
@@ -198,9 +169,6 @@ public class MainActivity extends Activity
             });
             searchView.setIconifiedByDefault(true);
             return true;
-        }
-
-        return true;
     }
 
     @Override
