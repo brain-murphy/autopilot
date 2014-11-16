@@ -5,12 +5,17 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.provider.Telephony;
 import android.telephony.SmsManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
+import java.util.Collections;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import com.microsoft.azure.storage.*;
 import com.microsoft.azure.storage.table.*;
 
@@ -145,5 +150,13 @@ public class MessageService extends IntentService {
         }
 
 
+    }
+
+    private String[] getEnabledContactsNumbers() {
+
+        Map<String, ?> map = getSharedPreferences(getString(R.string.shared_pref_key),
+                MODE_PRIVATE).getAll();
+        String[] results = new String[map.size()];
+        return map.keySet().toArray(results);
     }
 }
