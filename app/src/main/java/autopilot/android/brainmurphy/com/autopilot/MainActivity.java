@@ -74,7 +74,6 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
         }
     };
 
-
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
@@ -200,14 +199,14 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
         }
     }
 
-
-
     public void restoreActionBar() {
         ActionBar actionBar = getActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setTitle(mTitle);
     }
+
+
 
 
     @Override
@@ -277,7 +276,11 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
     protected void onStop() {
         super.onStop();
         if (binder != null) {
-            unbindService(connection);
+            try {
+                unbindService(connection);
+            } catch (Exception e) {
+                Log.e("yo", "as you were");
+            }
         }
     }
 

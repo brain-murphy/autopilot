@@ -18,4 +18,10 @@
     <string name="title_activity_contact_search">Contacts</string>
     <string name="shared_pref_key">asdfasdf</string>
 
+    <string-array name="personalities">
+        <item>You</item>
+        <item>Barack Obama</item>
+        <item>CleverBot</item>
+    </string-array>
+
 </resources>
