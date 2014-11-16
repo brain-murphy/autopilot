@@ -276,7 +276,9 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
     @Override
     protected void onStop() {
         super.onStop();
-        unbindService(connection);
+        if (binder != null) {
+            unbindService(connection);
+        }
     }
 
     @Override

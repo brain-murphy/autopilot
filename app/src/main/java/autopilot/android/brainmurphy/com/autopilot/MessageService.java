@@ -129,7 +129,6 @@ public class MessageService extends IntentService {
 
                             ArrayList<Response> list = new ArrayList<Response>();
 
-
                             // Loop through the results, displaying information about the entity.
                             for (Response r : responseTable.execute(partitionQuery)) {
                                 try {
@@ -195,7 +194,6 @@ public class MessageService extends IntentService {
                 public void run() {
                     userNumber = Secure.getString(context.getContentResolver(),
                             Secure.ANDROID_ID);
-
                     Bundle myBundle = intent.getExtras();
                     android.telephony.SmsMessage [] messages = null;
 
