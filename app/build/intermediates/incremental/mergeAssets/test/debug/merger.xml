@@ -1,2 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
+<<<<<<< HEAD
 <merger version="3"><dataSet config="main"><source path="C:\Users\Brian\Code\Android\autopilot\app\src\androidTest\assets"/></dataSet></merger>
+=======
+<merger version="3"><dataSet config="main"><source path="/Users/luis/Documents/Development/autopilot/app/src/androidTest/assets"/></dataSet></merger>
+>>>>>>> e63438d32601027a50a045e2f55679b9a5540579
