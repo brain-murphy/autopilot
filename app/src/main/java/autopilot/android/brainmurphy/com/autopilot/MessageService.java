@@ -28,6 +28,7 @@ public class MessageService extends IntentService {
     private IntentFilter intentFilter;
 
     private MarkovModel markovModel;
+    private MessageData data;
 
     public MessageService() {
         super("MessageService");

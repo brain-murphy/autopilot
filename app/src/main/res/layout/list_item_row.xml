@@ -6,13 +6,8 @@
     android:layout_marginBottom="0.5dp"
     android:layout_marginRight="0.5dp"
     android:layout_marginTop="0dp"
-    android:focusableInTouchMode="true"
-    android:clickable="true"
-    android:paddingLeft="5dp"
-    android:paddingRight="5dp"
-    android:paddingBottom="10dp"
-    android:paddingTop="5dp"
-    android:focusable="true">
+    android:padding="5dp"
+    android:descendantFocusability="blocksDescendants">
 
     <ImageView
         android:layout_width="59dp"
@@ -32,10 +27,5 @@
         android:id="@android:id/text1"
         android:layout_toEndOf="@+id/imageView"
         android:textColor="@color/text_color"
-        android:clickable="false"
-        android:textStyle="bold"
-        android:gravity="center_vertical"
-        android:layout_centerVertical="true"
-        android:layout_toRightOf="@+id/imageView" />
-
+        android:textStyle="bold" />
 </RelativeLayout>

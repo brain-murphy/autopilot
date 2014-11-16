@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <<<<<<< HEAD
+<merger version="3"><dataSet config="21.0.0"><source path="C:\Users\Brian\Code\Android\autopilot\app\build\intermediates\exploded-aar\com.android.support\support-v4\21.0.0\assets"/></dataSet><dataSet config="main"><source path="C:\Users\Brian\Code\Android\autopilot\app\src\main\assets"><file name="test-data/SMS.csv" path="C:\Users\Brian\Code\Android\autopilot\app\src\main\assets\test-data\SMS.csv"/><file name="test-data/SMS2.csv" path="C:\Users\Brian\Code\Android\autopilot\app\src\main\assets\test-data\SMS2.csv"/><file name="test-data/stopwords.txt" path="C:\Users\Brian\Code\Android\autopilot\app\src\main\assets\test-data\stopwords.txt"/></source></dataSet><dataSet config="debug"><source path="C:\Users\Brian\Code\Android\autopilot\app\src\debug\assets"/></dataSet></merger>
+=======
+<<<<<<< HEAD
 <<<<<<< HEAD
 <merger version="3"><dataSet config="21.0.0"><source path="/Users/luis/Documents/Development/autopilot/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.0/assets"/></dataSet><dataSet config="main"><source path="/Users/luis/Documents/Development/autopilot/app/src/main/assets"><file name="test-data/SMS.csv" path="/Users/luis/Documents/Development/autopilot/app/src/main/assets/test-data/SMS.csv"/><file name="test-data/SMS2.csv" path="/Users/luis/Documents/Development/autopilot/app/src/main/assets/test-data/SMS2.csv"/></source></dataSet><dataSet config="debug"><source path="/Users/luis/Documents/Development/autopilot/app/src/debug/assets"/></dataSet></merger>
 =======
@@ -8,3 +11,4 @@
 =======
 <merger version="3"><dataSet config="21.0.0"><source path="/Users/connorrmounts/Code/autopilot/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.0/assets"/></dataSet><dataSet config="main"><source path="/Users/connorrmounts/Code/autopilot/app/src/main/assets"><file name="test-data/SMS.csv" path="/Users/connorrmounts/Code/autopilot/app/src/main/assets/test-data/SMS.csv"/><file name="test-data/SMS2.csv" path="/Users/connorrmounts/Code/autopilot/app/src/main/assets/test-data/SMS2.csv"/><file name="test-data/stopwords.txt" path="/Users/connorrmounts/Code/autopilot/app/src/main/assets/test-data/stopwords.txt"/></source></dataSet><dataSet config="debug"><source path="/Users/connorrmounts/Code/autopilot/app/src/debug/assets"/></dataSet></merger>
 >>>>>>> 0826421882a30eca124cd85ddf283f0ec6b6aeef
+>>>>>>> e63438d32601027a50a045e2f55679b9a5540579

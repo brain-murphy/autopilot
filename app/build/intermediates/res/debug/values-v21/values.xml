@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 <<<<<<< HEAD
+    <!-- From: file:/C:/Users/Brian/Code/Android/autopilot/app/src/main/res/values-v21/styles.xml -->
+=======
+<<<<<<< HEAD
     <!-- From: file:/Users/luis/Documents/Development/autopilot/app/src/main/res/values-v21/styles.xml -->
 =======
     <!-- From: file:/Users/connorrmounts/Code/autopilot/app/src/main/res/values-v21/styles.xml -->
 >>>>>>> 0826421882a30eca124cd85ddf283f0ec6b6aeef
+>>>>>>> e63438d32601027a50a045e2f55679b9a5540579
     <eat-comment/>
     <style name="AppTheme" parent="android:Theme.Material.Light">
     </style>
