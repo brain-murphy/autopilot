@@ -27,12 +27,15 @@ public class MessageService extends IntentService {
     private SmsReceiver smsReceiver;
     private IntentFilter intentFilter;
 
+    private MarkovModel markovModel;
+
     public MessageService() {
         super("MessageService");
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        markovModel = MarkovModel.defaultModel(this);
         return START_STICKY;
     }
 

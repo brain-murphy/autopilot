@@ -47,6 +47,7 @@ public class MainActivity extends Activity
 
     private static final String KEY_QUERY = "queryKey";
     private static final String KEY_SELECTION = "selectionKey";
+    private MarkovModel model;
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
