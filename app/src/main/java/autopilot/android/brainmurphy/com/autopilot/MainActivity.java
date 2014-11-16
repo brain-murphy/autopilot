@@ -12,6 +12,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.app.TaskStackBuilder;
 import android.app.SearchManager;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.CursorLoader;
@@ -101,7 +102,7 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
 
         contactsListView = (ListView) findViewById(R.id.contactsListView);
         enabledChildren = new ArrayList<Long>();
-        Map<String, ?> map = getSharedPreferences("asdfasdf", MODE_PRIVATE).getAll();
+        Map<String, ?> map = getSharedPreferences(getString(R.string.shared_pref_key), MODE_PRIVATE).getAll();
         for (String key : map.keySet()) {
             enabledChildren.add((Long) map.get(key));
         }
@@ -118,11 +119,39 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
         contactsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                adapter.getCursor().moveToPosition(position);
+                String contactId =
+                        adapter.getCursor().getString(
+                                adapter.getCursor().getColumnIndex(ContactsContract.Contacts._ID));
+                //
+                //  Get all phone numbers.
+                //
+
+                ContentResolver cr = getContentResolver();
+                Cursor phones = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
+                        ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = " + contactId, null, null);
+                String number = null;
+                while (phones.moveToNext()) {
+                    number = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                    int type = phones.getInt(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE));
+                    switch (type) {
+                        case ContactsContract.CommonDataKinds.Phone.TYPE_HOME:
+                            // do something with the Home number here...
+                            break;
+                        case ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE:
+                            // do something with the Mobile number here...
+                            break;
+                        case ContactsContract.CommonDataKinds.Phone.TYPE_WORK:
+                            // do something with the Work number here...
+                            break;
+                    }
+                }
+                phones.close();
                 if (enabledChildren.contains(id)) {
                     enabledChildren.remove(id);
-                    getSharedPreferences("asdfasdf", MODE_APPEND).edit().remove(Long.toString(id)).commit();
+                    getSharedPreferences(getString(R.string.shared_pref_key), MODE_APPEND).edit().remove(number).commit();
                 } else {
-                    getSharedPreferences("asdfasdf", MODE_APPEND).edit().putLong(Long.toString(id), id).commit();
+                    getSharedPreferences(getString(R.string.shared_pref_key), MODE_APPEND).edit().putLong(number, id).commit();
                     enabledChildren.add(id);
                 }
                 adapter.notifyDataSetChanged();

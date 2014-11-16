@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.Telephony;
@@ -13,6 +14,8 @@ import android.telephony.SmsManager;
 import android.telephony.gsm.SmsMessage;
 import android.util.Log;
 
+import java.util.Collections;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -90,5 +93,13 @@ public class MessageService extends IntentService {
              Log.d("Text received", message.toString2());
              }
         }
+    }
+
+    private String[] getEnabledContactsNumbers() {
+
+        Map<String, ?> map = getSharedPreferences(getString(R.string.shared_pref_key),
+                MODE_PRIVATE).getAll();
+        String[] results = new String[map.size()];
+        return map.keySet().toArray(results);
     }
 }
