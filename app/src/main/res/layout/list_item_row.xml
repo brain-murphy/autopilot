@@ -3,7 +3,7 @@
     android:orientation="vertical" android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:background="@color/active"
-    android:layout_marginBottom="0.5dp"
+    android:layout_marginBottom="1dp"
     android:layout_marginRight="0.5dp"
     android:layout_marginTop="0dp"
     android:padding="5dp"
@@ -27,5 +27,9 @@
         android:id="@android:id/text1"
         android:layout_toEndOf="@+id/imageView"
         android:textColor="@color/text_color"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:layout_centerVertical="true"
+        android:layout_centerInParent="true"
+        android:layout_toRightOf="@id/imageView"
+        android:layout_marginLeft="5dp"/>
 </RelativeLayout>
