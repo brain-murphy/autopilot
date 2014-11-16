@@ -116,7 +116,7 @@ public class MainActivity extends Activity
 
         Intent intent = new Intent(this, MessageService.class);
         //intent.putExtra(MessageService.KEY_MESSAGE_DATA, data);
-        startService(intent);
+       // startService(intent);
 
 
 
