@@ -8,4 +8,10 @@
         android:icon="@android:drawable/ic_menu_search"
         android:showAsAction="ifRoom"
         />
+    <item
+        android:id="@+id/myswitch"
+        android:title="@string/master_switch"
+        android:showAsAction="always"
+        android:actionLayout="@layout/master_switch"
+        />
 </menu>

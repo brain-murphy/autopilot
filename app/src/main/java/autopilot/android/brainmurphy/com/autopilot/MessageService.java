@@ -31,7 +31,8 @@ public class MessageService extends IntentService {
     private IntentFilter intentFilter;
     private CloudTable messageTable;
     private CloudTable responseTable;
-    
+
+
     public MessageService() {
         super("MessageService");
     }
