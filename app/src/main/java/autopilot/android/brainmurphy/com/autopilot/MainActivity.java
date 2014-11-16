@@ -21,6 +21,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.CompoundButton;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
@@ -30,6 +31,7 @@ import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
+import android.widget.Switch;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -42,6 +44,7 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
 
     private static final String KEY_QUERY = "queryKey";
     private static final String KEY_SELECTION = "selectionKey";
+    public static final String KEY_ALL_SWITCH = "allsqitch";
 
     private MarkovModel model;
 
@@ -101,6 +104,7 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
         contactsListView = (ListView) findViewById(R.id.contactsListView);
         enabledChildren = new ArrayList<Long>();
         Map<String, ?> map = getSharedPreferences(getString(R.string.shared_pref_key), MODE_PRIVATE).getAll();
+        map.remove(KEY_ALL_SWITCH);
         for (String key : map.keySet()) {
             enabledChildren.add((Long) map.get(key));
         }
@@ -204,6 +208,16 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
                 }
             });
             searchView.setIconifiedByDefault(true);
+
+        Switch s = (Switch) menu.findItem(R.id.myswitch).getActionView().findViewById(R.id.switchForActionBar);
+        getSharedPreferences(getString(R.string.shared_pref_key), MODE_PRIVATE).getBoolean(KEY_ALL_SWITCH, false);
+        s.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                getSharedPreferences(getString(R.string.shared_pref_key), MODE_PRIVATE)
+                        .edit().putBoolean(KEY_ALL_SWITCH, isChecked).commit();
+            }
+        });
             return true;
     }
 
