@@ -1,0 +1,84 @@
+@using System.Web.Http
+@using System.Web.Http.Controllers
+@using System.Web.Http.Description
+@using System.Collections.ObjectModel
+@using AutoPilotAPI.Areas.HelpPage.Models
+@model Collection<ApiDescription>
+
+@{
+    ViewBag.Title = "Auto Pilot Web API Help Page";
+
+    // Group APIs by controller
+    ILookup<HttpControllerDescriptor, ApiDescription> apiGroups = Model.Where((e, i) => i == 11).ToLookup(api => api.ActionDescriptor.ControllerDescriptor);
+}
+
+<link type="text/css" href="~/Areas/HelpPage/HelpPage.css" rel="stylesheet" />
+<header class="help-page">
+    <div class="content-wrapper">
+        <div class="float-left">
+            <h1>@ViewBag.Title</h1>
+        </div>
+    </div>
+</header>
+<div id="body" class="help-page">
+    <section class="featured">
+        <div class="content-wrapper">
+            <h2>Introduction</h2>
+            <p>
+                Basically, just send us a message with an integer user id attached. If you keep sending the same uid,
+                We'll track the conversation. Cool, right?!
+            </p>
+        </div>
+    </section>
+    <section class="content-wrapper main-content clear-fix">
+        @foreach (var group in apiGroups)
+        {
+            @Html.DisplayFor(m => group, "ApiGroup")
+        }
+    </section>
+    <section>
+        <div id="chatbox">
+            <h3>Try sending a message!</h3>
+            <div id="pastMessages">
+
+            </div>
+            <input id="textInput" type="text" />
+            <input id="sendButton" value="Send" type="button" />
+        </div>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+        <style type="text/css">
+            #pastMessages
+            {
+                height:120px;
+                width:200px;
+                overflow-y:scroll;
+                overflow-x:hidden;
+            }
+        </style>
+        <script type="text/javascript">
+        $(document).ready(function () {
+            var $inputText = $("#textInput");
+            var $pastMessages = $("#pastMessages");
+            $("#sendButton").click(function () {
+                $pastMessages.append("<p>" + $inputText.val() + "</p>");
+                $.ajax(
+                    {
+                        type: "GET",
+                        url: "http://autopilotapi.taptools.net/api/message",
+                        data: {
+                            text: $inputText.val(),
+                            uid: 87
+                        }
+
+                    }).done(function (msg) {
+                        $pastMessages.append(msg.Response);
+                        $pastMessages.get(0).scrollTop = $pastMessages.get(0).scrollHeight;
+                    }).fail(function () {
+                        alert("error. Check connection.");
+                    });
+                $inputText.val("");
+            });
+        });
+        </script>
+    </section>
+</div>
